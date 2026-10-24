@@ -1,0 +1,149 @@
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import type { APIRequestContext } from 'playwright';
+import pLimit from 'p-limit';
+import type { NetworkRecorder } from '../capture/network.js';
+import { MAX_ASSET_BYTES } from '../config/defaults.js';
+import { hash } from '../util/hash.js';
+import { slugify } from '../util/naming.js';
+
+export type AssetKind = 'image' | 'font' | 'css' | 'media' | 'other';
+
+const DIRS: Record<AssetKind, string> = { image: 'img', font: 'fonts', css: 'css', media: 'media', other: 'files' };
+
+const EXT_BY_TYPE: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+  'image/x-icon': 'ico',
+  'image/vnd.microsoft.icon': 'ico',
+  'font/woff2': 'woff2',
+  'font/woff': 'woff',
+  'font/ttf': 'ttf',
+  'font/otf': 'otf',
+  'application/font-woff2': 'woff2',
+  'application/font-woff': 'woff',
+  'application/x-font-ttf': 'ttf',
+  'application/x-font-otf': 'otf',
+  'application/vnd.ms-fontobject': 'eot',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
+  'video/quicktime': 'mov',
+  'audio/mpeg': 'mp3',
+  'text/css': 'css',
+  'application/json': 'json',
+  'application/pdf': 'pdf',
+};
+
+const KNOWN_EXT =
+  /^(png|jpe?g|webp|avif|gif|svg|ico|bmp|woff2?|ttf|otf|eot|mp4|webm|mov|m4v|mp3|ogg|wav|css|json|pdf|riv|lottie)$/i;
+
+export interface AssetStoreOptions {
+  /** Download assets that the page referenced but never loaded (srcset candidates, other breakpoints). */
+  fetchUnloaded: boolean;
+}
+
+/** Maps remote URLs to local files under `<out>/assets`, served at `/assets/...`. */
+export class AssetStore {
+  private map = new Map<string, string | null>();
+  private inflight = new Map<string, Promise<string | null>>();
+  private limit = pLimit(8);
+  readonly failed: string[] = [];
+  bytes = 0;
+
+  constructor(
+    private outDir: string,
+    private network: NetworkRecorder,
+    private request: APIRequestContext,
+    private opts: AssetStoreOptions,
+  ) {}
+
+  /** Public path for an already-ensured URL, or undefined if it stays remote. */
+  get(url: string): string | undefined {
+    return this.map.get(url) ?? undefined;
+  }
+
+  ensure(url: string, kind: AssetKind, referer?: string): Promise<string | null> {
+    if (this.map.has(url)) return Promise.resolve(this.map.get(url)!);
+    let p = this.inflight.get(url);
+    if (!p) {
+      p = this.load(url, kind, referer).then((v) => {
+        this.map.set(url, v);
+        return v;
+      });
+      this.inflight.set(url, p);
+    }
+    return p;
+  }
+
+  private async load(url: string, kind: AssetKind, referer?: string): Promise<string | null> {
+    if (!/^https?:/i.test(url)) return null;
+    const rec = this.network.bodies.get(url);
+    if (rec) return this.write(url, rec.body, rec.contentType, kind);
+    // Fonts that were never requested are unused subsets (e.g. other unicode
+    // ranges); leave them remote instead of downloading hundreds of slices.
+    if (!this.opts.fetchUnloaded || kind === 'font') return null;
+    return this.limit(async () => {
+      try {
+        const res = await this.request.get(url, {
+          headers: referer ? { referer } : {},
+          timeout: 30_000,
+          failOnStatusCode: false,
+        });
+        if (!res.ok()) {
+          this.failed.push(url);
+          return null;
+        }
+        const body = await res.body();
+        if (body.length > MAX_ASSET_BYTES) return null;
+        const ct = (res.headers()['content-type'] || '').split(';')[0].trim().toLowerCase();
+        return this.write(url, body, ct, kind);
+      } catch {
+        this.failed.push(url);
+        return null;
+      }
+    });
+  }
+
+  private write(url: string, body: Buffer, contentType: string, kind: AssetKind): string {
+    const u = new URL(url);
+    // Next.js / Vercel / Cloudinary-style optimizers: /_next/image?url=/a.png&w=640
+    const inner = u.searchParams.get('url');
+    let path = u.pathname;
+    let suffix = '';
+    if (inner) {
+      try {
+        path = new URL(inner, u).pathname;
+        const w = u.searchParams.get('w');
+        if (w) suffix = `-w${w}`;
+      } catch {}
+    }
+    const last = decodeURIComponent(path.split('/').pop() || '') || 'asset';
+    const dot = last.lastIndexOf('.');
+    const urlExt = dot > 0 ? last.slice(dot + 1) : '';
+    const ext = EXT_BY_TYPE[contentType] || (KNOWN_EXT.test(urlExt) ? urlExt.toLowerCase() : 'bin');
+    const base = slugify(dot > 0 ? last.slice(0, dot) : last);
+    if (contentType.startsWith('font/') || /woff|ttf|otf|eot/.test(ext)) kind = 'font';
+    else if (contentType.startsWith('image/')) kind = 'image';
+    else if (contentType.startsWith('video/') || contentType.startsWith('audio/')) kind = 'media';
+    const name = `${base}${suffix}-${hash(url)}.${ext}`;
+    return this.writeFile(DIRS[kind], name, body);
+  }
+
+  /** Store generated bytes (canvas snapshots, large data: URIs). */
+  writeGenerated(kind: AssetKind, name: string, body: Buffer): string {
+    return this.writeFile(DIRS[kind], name, body);
+  }
+
+  writeFile(dir: string, name: string, body: Buffer | string): string {
+    const abs = join(this.outDir, 'assets', dir);
+    mkdirSync(abs, { recursive: true });
+    writeFileSync(join(abs, name), body);
+    this.bytes += typeof body === 'string' ? Buffer.byteLength(body) : body.length;
+    return `/assets/${dir}/${name}`;
+  }
+}
