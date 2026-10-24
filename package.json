@@ -58,6 +58,7 @@
     "test:coverage": "vitest run --project unit --coverage.enabled --coverage.provider=v8",
     "test:watch": "vitest --project unit",
     "benchmark": "node scripts/benchmark.mjs",
+    "prepublishOnly": "pnpm check && pnpm build",
     "fixtures:images": "node tests/fixtures/make-images.mjs",
     "prepare": "husky"
   },
@@ -111,5 +112,6 @@
   "engines": {
     "node": ">=20.11"
   },
-  "packageManager": "pnpm@12.8.1"
+  "packageManager": "pnpm@12.8.1",
+  "mcpName": "io.github.Manish-Tamang/dittu"
 }
