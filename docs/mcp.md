@@ -7,7 +7,7 @@ by hand:
 ```json
 {
   "mcpServers": {
-    "dittu": { "command": "npx", "args": ["-y", "dittu", "mcp"] }
+    "dittu": { "command": "npx", "args": ["-y", "@manishtamang/dittu", "mcp"] }
   }
 }
 ```

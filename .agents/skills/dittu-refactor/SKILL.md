@@ -9,7 +9,7 @@ Generated code is faithful but mechanical. Refactor in small steps and
 **re-verify after each step**:
 
 ```bash
-npx dittu verify <out> --targets next    # or astro; or MCP verify_clone
+npx @manishtamang/dittu verify <out> --targets next    # or astro; or MCP verify_clone
 ```
 
 The score must not drop. If it does, the last change altered rendering; fix it

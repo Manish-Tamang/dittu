@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "dittu",
+      "identifier": "@manishtamang/dittu",
       "version": "0.1.0",
       "runtimeHint": "npx",
       "transport": {

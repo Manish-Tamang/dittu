@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Published on npm as `@manishtamang/dittu` (the unscoped name was rejected). The command is still `dittu`: `npx @manishtamang/dittu clone <url>`.
 - Interactive mode: `dittu`, `dittu <url>` and `dittu clone [url]` show a dotted DITTU banner and ask for frameworks, pages, verification, output folder and advanced settings (skipped for flags you pass, with `-y`, in CI, or without a terminal).
 - Fix: flags after `clone` were captured by the root command (`-o` was ignored).
 - Fix: re-cloning into an existing folder reused stale reference screenshots; previous results are now cleared (keeping `node_modules`).

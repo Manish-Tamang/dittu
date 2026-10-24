@@ -22,15 +22,15 @@ Prefer the MCP tools when the `dittu` server is connected:
 Otherwise use the CLI:
 
 ```bash
-npx dittu clone <url> [-o <out>] [-p <pages>] [--build] [--remove "<selector>" ...]
-npx dittu verify <out> [--targets next,astro]
+npx @manishtamang/dittu clone <url> [-o <out>] [-p <pages>] [--build] [--remove "<selector>" ...]
+npx @manishtamang/dittu verify <out> [--targets next,astro]
 ```
 
 - `pages > 1` crawls same-site pages (robots.txt respected) and links them.
 - `build: true` / `--build` also installs and builds the Next/Astro apps and
   scores them. Do this before handing the project over.
 - `remove` drops cookie banners or chat widgets by CSS selector.
-- If Chromium fails to start, run `npx dittu doctor` and relay its fix.
+- If Chromium fails to start, run `npx @manishtamang/dittu doctor` and relay its fix.
 
 ## Read the result
 

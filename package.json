@@ -1,5 +1,5 @@
 {
-  "name": "dittu",
+  "name": "@manishtamang/dittu",
   "version": "0.1.0",
   "description": "Clone any website's frontend (layout, CSS, fonts, images, animations) into Next.js or Astro, verified by pixel diff. CLI + MCP server + agent skills.",
   "keywords": [
@@ -38,6 +38,9 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

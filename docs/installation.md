@@ -5,7 +5,7 @@ Requirements: Node.js 20.11+ (24 recommended, see `.nvmrc`) and npm.
 ## Set up your agent
 
 ```bash
-npx dittu setup
+npx @manishtamang/dittu setup
 ```
 
 Registers the `dittu` MCP server and installs the skills for every agent it
@@ -28,7 +28,7 @@ sudo npx playwright install-deps chromium
 Check everything with:
 
 ```bash
-npx dittu doctor
+npx @manishtamang/dittu doctor
 ```
 
 ```

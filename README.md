@@ -35,12 +35,12 @@ Visual match (1 − differing pixels / total)
 ### Set up your agent
 
 ```bash
-npx dittu setup
+npx @manishtamang/dittu setup
 ```
 
 Registers the dittu MCP server and installs the skills for every agent it
 finds: **Claude Code, Cursor, Gemini CLI, Codex**. Check your machine first
-with `npx dittu doctor` (on Linux/WSL you may need
+with `npx @manishtamang/dittu doctor` (on Linux/WSL you may need
 `sudo npx playwright install-deps chromium`).
 
 ### Ask your agent
@@ -53,17 +53,17 @@ components, and calls `verify_clone` to prove nothing visual changed.
 ### Use the terminal
 
 ```bash
-npx dittu                                        # interactive: banner, then pick URL, frameworks, pages…
-npx dittu clone https://example.com -y           # no questions: preview + Next.js + Astro, scored
-npx dittu clone https://example.com -p 5 --build # crawl 5 pages, build and score the apps
-npx dittu verify dittu-out/example.com --targets next
-npx dittu serve dittu-out/example.com
+npx @manishtamang/dittu                                        # interactive: banner, then pick URL, frameworks, pages…
+npx @manishtamang/dittu clone https://example.com -y           # no questions: preview + Next.js + Astro, scored
+npx @manishtamang/dittu clone https://example.com -p 5 --build # crawl 5 pages, build and score the apps
+npx @manishtamang/dittu verify dittu-out/example.com --targets next
+npx @manishtamang/dittu serve dittu-out/example.com
 ```
 
 ### Update dittu
 
 ```bash
-npx dittu@latest setup
+npx @manishtamang/dittu@latest setup
 ```
 
 ## How dittu works
