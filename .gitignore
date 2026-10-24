@@ -1,0 +1,6 @@
+node_modules
+dist
+coverage
+dittu-out
+*.log
+.DS_Store

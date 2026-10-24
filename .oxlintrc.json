@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "node": true,
+    "browser": true,
+    "es2024": true
+  },
+  "rules": {
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": ["__dittu", "__dittuFrozen", "__next_f"]
+      }
+    ],
+    "import/no-cycle": "error"
+  },
+  "overrides": [
+    {
+      "files": ["bridge/**/*.js"],
+      "rules": {
+        "no-unused-expressions": "off",
+        "unicorn/consistent-function-scoping": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["dist", "dittu-out", "tests/fixtures", "node_modules", "coverage"]
+}

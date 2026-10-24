@@ -1,0 +1,7 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "ignorePatterns": ["dist", "dittu-out", "tests/fixtures", "pnpm-lock.yaml", "CHANGELOG.md"]
+}
