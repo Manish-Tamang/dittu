@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Manish-Tamang/dittu",
+  "title": "dittu",
+  "description": "Clone any website's frontend into Next.js or Astro and verify it with pixel diffs.",
+  "websiteUrl": "https://github.com/Manish-Tamang/dittu",
+  "repository": {
+    "url": "https://github.com/Manish-Tamang/dittu",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "dittu",
+      "version": "0.1.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ]
+    }
+  ]
+}
