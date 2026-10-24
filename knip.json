@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["src/index.ts", "scripts/*.mjs", "tests/fixtures/*.mjs"],
-  "project": ["src/**/*.ts", "scripts/**/*.mjs", "tests/**/*.ts"]
+  "project": ["src/**/*.ts", "scripts/**/*.mjs", "tests/**/*.ts"],
+  "ignoreDependencies": ["prettier-plugin-astro"]
 }

@@ -1,4 +1,4 @@
-import type { Element, ElementContent } from 'hast';
+import type { Element } from 'hast';
 import { toString } from 'hast-util-to-string';
 import { pascal } from '../util/naming.js';
 
@@ -22,7 +22,7 @@ const classList = (el: Element): string[] =>
   Array.isArray(el.properties.className) ? el.properties.className.map(String) : [];
 
 /** Class names that describe the element (not utilities, not hashes). */
-export function semanticNames(el: Element): string[] {
+function semanticNames(el: Element): string[] {
   const out: string[] = [];
   for (const c of classList(el)) {
     const mod = CSS_MODULE.exec(c);
@@ -232,5 +232,3 @@ export function slotName(path: Element[], attr: string | null): string {
   }
   return 'text';
 }
-
-export const isText = (c: ElementContent) => c.type === 'text';

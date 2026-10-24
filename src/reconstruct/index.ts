@@ -17,7 +17,7 @@ import { extractRepeatedBlocks, extractRuns } from './repeats.js';
 import { SectionSplitter } from './sections.js';
 import { resetSignatures } from './signature.js';
 
-export type { ComponentDef, Reconstruction, ReconPage } from './ir.js';
+export type { Reconstruction } from './ir.js';
 
 /** Components referenced directly by a tree (uses, maps, component refs in data). */
 function references(node: Element | { type: 'root'; children: unknown[] }): Set<string> {

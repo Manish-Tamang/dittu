@@ -55,7 +55,7 @@ function collectRuns(page: ReconPage): Run[] {
       let j = i + 1;
       while (j < kids.length && kids[j].type === 'element' && signature(kids[j] as Element) === s) j++;
       if (j - i >= 2 && c.tagName !== MAP)
-        runs.push({ parent, start: i, count: j - i, sig: s, route: page.page.route, ancestors: [...stack].reverse() });
+        runs.push({ parent, start: i, count: j - i, sig: s, route: page.page.route, ancestors: stack.toReversed() });
       i = j;
     }
     stack.push(parent);
@@ -87,7 +87,7 @@ export function extractRuns(pages: ReconPage[], reg: Registry): RepeatStats {
   }
   const itemSize = (r: Run) => size(r.parent.children[r.start] as Element);
   // Largest items first: lists inside an extracted item become list props of its template.
-  const order = [...bySig.values()].sort((a, b) => itemSize(b[0]) - itemSize(a[0]));
+  const order = [...bySig.values()].toSorted((a, b) => itemSize(b[0]) - itemSize(a[0]));
 
   const parents = new Map<Element, Parent>();
   for (const p of pages) for (const [k, v] of parentMap(p.root)) parents.set(k, v);
@@ -168,7 +168,9 @@ export function extractRepeatedBlocks(roots: Parent[], reg: Registry, minSize = 
       groups.get(s)!.push({ el, parent });
     });
   }
-  const candidates = [...groups.values()].filter((g) => g.length >= 2).sort((a, b) => size(b[0].el) - size(a[0].el));
+  const candidates = [...groups.values()]
+    .filter((g) => g.length >= 2)
+    .toSorted((a, b) => size(b[0].el) - size(a[0].el));
   const parents = new Map<Element, Parent>();
   for (const root of roots) for (const [k, v] of parentMap(root)) parents.set(k, v);
   const taken = new Set<Element>();

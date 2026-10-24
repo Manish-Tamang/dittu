@@ -158,7 +158,7 @@ function objectExpr(entries: [string, Expr][]): ESTree.ObjectExpression {
 }
 
 /** `{ "--x": "1", color: "red" }` — wrapped in css() when it has custom properties (React's types reject those). */
-export function styleExpr(cssText: string, ctx: JsxContext): Expr {
+function styleExpr(cssText: string, ctx: JsxContext): Expr {
   const obj = styleToJs(cssText, { reactCompat: true }) as Record<string, string>;
   const expr = objectExpr(Object.entries(obj).map(([k, v]) => [k, lit(String(v))]));
   if (!ctx.cssHelper || !Object.keys(obj).some((k) => k.startsWith('--'))) return expr;

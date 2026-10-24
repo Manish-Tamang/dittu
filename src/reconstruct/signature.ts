@@ -51,7 +51,7 @@ export function signature(node: ElementContent | Root): string {
     const { dataComponent: _c, dataProps, ...rest } = node.properties;
     s = `@use{${JSON.stringify(rest)}}${dataProps === '{}' ? '' : '+'}`;
   } else {
-    const keys = Object.keys(node.properties).sort();
+    const keys = Object.keys(node.properties).toSorted();
     const attrs = keys.map((k) => (CONTENT_ATTRS.has(k) ? k : `${k}=${JSON.stringify(node.properties[k])}`)).join(',');
     s = `${node.tagName}{${attrs}}(${childSig(node.children)})`;
   }

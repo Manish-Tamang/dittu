@@ -21,7 +21,6 @@ export const STYLE_SLOT = 'dataDittuStyleSlot';
 
 export const IR_TAGS = new Set([USE, MAP, LOOP, SLOT, EACH]);
 
-export const slotRef = (path: string) => `${MARK}${path}${MARK}`;
 export const SLOT_RE = new RegExp(`^${MARK}([\\w.]+)${MARK}$`);
 
 /** A component reference as a prop value (e.g. `icon: GithubIcon`). */
@@ -42,7 +41,7 @@ export interface PropDef {
   type: PropType;
 }
 
-export type ComponentKind = 'section' | 'repeat' | 'icon';
+type ComponentKind = 'section' | 'repeat' | 'icon';
 
 export interface ComponentDef {
   /** Identifier, unique across the site. */

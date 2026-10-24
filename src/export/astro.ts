@@ -154,7 +154,7 @@ export class AstroWriter {
 
 function frontmatter(file: string, dir: string, ctx: JsxContext, self: string | null, extra: string[]): string {
   const lines: string[] = [];
-  for (const name of [...ctx.used].sort()) {
+  for (const name of [...ctx.used].toSorted()) {
     if (name === self) continue;
     const def = ctx.components.get(name);
     if (def) lines.push(`import ${name} from '${importPath(file, componentFile(dir, def))}';`);

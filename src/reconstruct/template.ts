@@ -35,7 +35,7 @@ const newCtx = (n: number): Ctx => ({
 });
 
 /** Attribute value as it appears in HTML (same stringification hast-util-to-html uses). */
-export function attrText(key: string, value: unknown): string {
+function attrText(key: string, value: unknown): string {
   if (Array.isArray(value))
     return find(html, key).commaSeparated ? commas(value.map(String)) : spaces(value.map(String));
   if (value === true) return '';
@@ -242,7 +242,7 @@ function resolve(path: string, scope: Scope): PropValue | undefined {
 }
 
 /** Expand a template with prop values back into plain hast (used to prove extraction is lossless). */
-export function instantiate(node: ElementContent, scope: Scope): ElementContent[] {
+function instantiate(node: ElementContent, scope: Scope): ElementContent[] {
   if (node.type !== 'element') return [structuredClone(node)];
   if (node.tagName === SLOT)
     return [{ type: 'text', value: String(resolve(String(node.properties.dataPath), scope) ?? '') }];
@@ -284,7 +284,7 @@ export function canonical(node: ElementContent | Root): string {
           properties: Object.fromEntries(
             Object.entries(n.properties)
               .filter(([k]) => k !== 'dataProps' || n.tagName === USE)
-              .sort(([a], [b]) => a.localeCompare(b))
+              .toSorted(([a], [b]) => a.localeCompare(b))
               .map(([k, v]) => [
                 k,
                 typeof v === 'string' || Array.isArray(v) || typeof v === 'boolean' || typeof v === 'number'

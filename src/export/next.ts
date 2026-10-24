@@ -28,9 +28,9 @@ function moduleHeader(
   });
   const typed = new Set(ctx.consts.map((c) => c.component));
   const lines: string[] = [];
-  const reactTypes = [...extraReactTypes].sort();
+  const reactTypes = [...extraReactTypes].toSorted();
   if (reactTypes.length) lines.push(`import type { ${reactTypes.join(', ')} } from "react";`);
-  for (const name of [...ctx.used].sort()) {
+  for (const name of [...ctx.used].toSorted()) {
     if (name === self) continue;
     const def = ctx.components.get(name);
     if (!def) continue;
@@ -81,7 +81,7 @@ function customElements(trees: (Root | Element)[]): string[] {
     }
   };
   trees.forEach(visit);
-  return [...found].sort();
+  return [...found].toSorted();
 }
 
 export async function exportNext(site: SiteModel, recon: Reconstruction, outDir: string, opts: { format: boolean }) {

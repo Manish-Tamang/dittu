@@ -1,7 +1,7 @@
 import type { ComponentDef, PropDef, PropType } from '../reconstruct/ir.js';
 
 /** TypeScript type for a prop. */
-export function tsType(type: PropType): string {
+function tsType(type: PropType): string {
   switch (type.kind) {
     case 'string':
       return 'string';

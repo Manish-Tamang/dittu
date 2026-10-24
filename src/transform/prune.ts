@@ -1,5 +1,5 @@
 import type { Element, Root } from 'hast';
-import postcss, { type AtRule, type Root as CssRoot } from 'postcss';
+import { parse, type AtRule, type Root as CssRoot } from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 import { find, html, svg } from 'property-information';
 
@@ -94,7 +94,7 @@ export interface PruneResult {
  * list could make a dead rule apply.
  */
 export function pruneCss(css: string, t: Tokens): PruneResult {
-  const root: CssRoot = postcss.parse(css);
+  const root: CssRoot = parse(css);
   let removedRules = 0;
   root.walkRules((rule) => {
     const parent = rule.parent as AtRule | undefined;
