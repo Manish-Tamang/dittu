@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" class="theme-light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About</title>
+  <meta name="description" content="Every edge case dittu must survive">
+  <link rel="icon" href="/img/tile.png">
+  <link rel="stylesheet" href="/css/base.css">
+  <style id="css-in-js"></style>
+</head>
+<body>
+  <div id="__next">
+    <header class="sc-header"><span class="tag">fixture</span> <a class="btn" href="/about">About</a> <a class="btn" href="#cards">Cards</a></header>
+    <main>
+      <section class="hero"><div><h1>About page</h1><p>Rendered by JS? <b>Some</b> of it.</p><div class="spinner" style="margin: 24px auto"></div></div></section>
+      <section id="cards" class="cards">
+        <div class="card reveal"><img src="/img/card-400.png" srcset="/img/card-400.png 400w, /img/card-800.png 800w" sizes="(max-width: 700px) 100vw, 33vw" alt=""><p style="padding: 0 16px">One</p></div>
+        <div class="card reveal"><img src="/img/card-400.png" alt="" loading="lazy"><p style="padding: 0 16px">Two</p></div>
+        <div class="card motion-card"><canvas id="c2d" width="400" height="250" style="width:100%;display:block"></canvas><p style="padding: 0 16px">Canvas</p></div>
+      </section>
+      <div class="carousel"><div class="track" id="track"><div>Slide A</div><div>Slide B</div><div>Slide C</div></div></div>
+      <div class="pattern"></div>
+      <pre>  indented
+    code   block</pre>
+      <div id="js-mount"></div>
+      <section style="padding: 32px 64px"><canvas id="gl" width="300" height="150"></canvas>
+        <svg width="48" height="48" viewBox="0 0 24 24"><defs><circle id="dot" cx="12" cy="12" r="10" fill="#ff2a68"/></defs><use xlink:href="#dot"/></svg>
+        <input id="email" type="email"> <input type="checkbox" id="agree"> <textarea id="ta"></textarea>
+      </section>
+      <section class="reveal" style="padding: 64px; height: 400px"><h2>Bottom reveal</h2></section>
+      <section style="padding: 64px; height: 300px"><h2 id="waapi" style="opacity:0">WAAPI reveal</h2></section>
+    </main>
+    <footer style="padding: 32px 64px; background: #1b1b2f; color: #eee">Footer <span onclick="alert(1)">© fixture</span></footer>
+  </div>
+  <script>
+    // CSS-in-JS: rules exist only in the CSSOM
+    const sheet = document.getElementById('css-in-js').sheet;
+    sheet.insertRule('.sc-header { display: flex; gap: 12px; align-items: center; padding: 16px 64px; background: #fff; border-bottom: 1px solid #eee; }');
+    sheet.insertRule('.motion-card p { color: rebeccapurple; font-weight: 600; }');
+    // canvas 2D
+    const c = document.getElementById('c2d').getContext('2d');
+    const g = c.createLinearGradient(0, 0, 400, 250); g.addColorStop(0, '#00c6ff'); g.addColorStop(1, '#0072ff');
+    c.fillStyle = g; c.fillRect(0, 0, 400, 250); c.fillStyle = '#fff'; c.font = 'bold 40px sans-serif'; c.fillText('canvas', 120, 140);
+    // WebGL
+    const gl = document.getElementById('gl').getContext('webgl');
+    if (gl) { gl.clearColor(0.2, 0.7, 0.4, 1); gl.clear(gl.COLOR_BUFFER_BIT); }
+    // invalid nesting via DOM APIs: <p> containing <div>, table without tbody
+    const p = document.createElement('p'); p.className = 'note'; p.textContent = 'Paragraph with a block inside: ';
+    const d = document.createElement('div'); d.textContent = 'block child'; d.style.color = '#0072ff'; p.appendChild(d);
+    const table = document.createElement('table');
+    for (let r = 0; r < 2; r++) { const tr = document.createElement('tr'); for (let k = 0; k < 3; k++) { const td = document.createElement('td'); td.textContent = r + ':' + k; tr.appendChild(td); } table.appendChild(tr); }
+    const mount = document.getElementById('js-mount'); mount.style.padding = '0 64px'; mount.append(p, table);
+    // live form state
+    document.getElementById('email').value = 'hi@example.com';
+    document.getElementById('agree').checked = true;
+    document.getElementById('ta').value = 'typed { text }';
+    // reveals: class toggle (AOS-like) and element.animate (Framer-like)
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }));
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    const w = document.getElementById('waapi');
+    new IntersectionObserver((es, o) => es.forEach((e) => { if (e.isIntersecting) {
+      w.animate({ opacity: [0, 1], transform: ['translateY(30px)', 'none'] }, { duration: 500, easing: 'ease-out' }).finished.then(() => { w.style.opacity = '1'; });
+      o.disconnect(); } })).observe(w);
+    // carousel driven by a timer: must freeze consistently
+    let i = 0; setInterval(() => { i = (i + 1) % 3; document.getElementById('track').style.transform = `translateX(-${i * 100}%)`; }, 1200);
+  </script>
+</body>
+</html>

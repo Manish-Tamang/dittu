@@ -1,0 +1,2 @@
+:root { --accent: #ff2a68; --soft: #ffe3ea; }
+.tag { display: inline-block; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }

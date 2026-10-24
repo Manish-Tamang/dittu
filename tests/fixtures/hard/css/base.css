@@ -1,0 +1,21 @@
+@import url("./theme.css");
+@font-face { font-family: Brand; src: url("../fonts/brand.ttf") format("truetype"); font-display: block; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: #1b1b2f; background: #fafafa; }
+.hero { min-height: 70vh; display: grid; place-items: center; color: white; background: url("../img/hero-bg.png") center / cover; text-align: center; }
+.hero h1 { font-family: Brand, serif; font-size: 64px; margin: 0; }
+.btn { display: inline-block; padding: 12px 20px; border-radius: 999px; background: white; color: #222; text-decoration: none; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 64px; }
+.card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+.card img { width: 100%; display: block; }
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity .6s, transform .6s; }
+.reveal.in { opacity: 1; transform: none; }
+.spinner { width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.track { display: flex; transition: transform .5s; }
+.track > div { min-width: 100%; height: 120px; display: grid; place-items: center; font-size: 32px; }
+.carousel { overflow: hidden; margin: 0 64px; border-radius: 12px; background: var(--soft); }
+pre { background: #111; color: #9f9; padding: 16px; margin: 32px 64px; }
+table { margin: 32px 64px; border-collapse: collapse; } td { border: 1px solid #ccc; padding: 8px 16px; }
+.pattern { height: 80px; margin: 0 64px; background-image: url("../img/tile.png"); }
+@media (max-width: 700px) { .cards { grid-template-columns: 1fr; padding: 24px; } .hero h1 { font-size: 40px; } }
