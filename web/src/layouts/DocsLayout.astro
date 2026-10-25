@@ -1,0 +1,65 @@
+---
+import Layout from './Layout.astro';
+import DocsHeader from '../components/DocsHeader.astro';
+import Search from '../components/Search.astro';
+import { getSections } from '../lib/docs';
+
+interface Props {
+  title: string;
+  description: string;
+  current?: string;
+  schema?: object[];
+  markdown?: string;
+}
+
+const { title, description, current, schema, markdown } = Astro.props;
+const sections = await getSections();
+const linkClass = (active: boolean) => [
+  'block rounded-md px-3 py-1.5 text-sm transition-colors',
+  active ? 'bg-white/[0.07] font-medium text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white',
+];
+---
+
+<Layout title={title} description={description} type={current ? 'article' : 'website'} schema={schema} markdown={markdown}>
+  <DocsHeader />
+  <div class="mx-auto max-w-[1440px] lg:grid lg:grid-cols-[280px_1fr]">
+    <aside
+      data-sidebar
+      class="fixed inset-x-0 bottom-0 top-14 z-20 hidden overflow-y-auto border-r border-white/10 bg-black px-4 py-8 data-[open]:block lg:sticky lg:block lg:h-[calc(100vh-3.5rem)] lg:px-5"
+    >
+      <nav class="space-y-8">
+        <ul>
+          <li><a href="/docs" class:list={linkClass(!current)}>Introduction</a></li>
+        </ul>
+        {
+          sections.map((section) => (
+            <div>
+              <p class="mb-2 px-3 text-xs font-medium text-neutral-500">{section.title}</p>
+              <ul class="space-y-0.5">
+                {section.docs.map((doc) => (
+                  <li>
+                    <a href={`/docs/${doc.id}`} class:list={linkClass(doc.id === current)}>
+                      {doc.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </aside>
+    <main class="min-w-0">
+      <slot />
+    </main>
+  </div>
+  <Search />
+</Layout>
+
+<script>
+  const sidebar = document.querySelector<HTMLElement>('[data-sidebar]')!;
+  document.querySelector('[data-sidebar-toggle]')?.addEventListener('click', () => {
+    sidebar.toggleAttribute('data-open');
+    document.body.classList.toggle('overflow-hidden', sidebar.hasAttribute('data-open'));
+  });
+</script>
