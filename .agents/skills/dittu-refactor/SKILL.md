@@ -42,7 +42,8 @@ before continuing.
   inline elements changes layout. Don't "clean it up" across line breaks.
 - Don't wrap sections in extra `<div>`s or change `<p>`/`<div>` choices, because
   selectors and margins depend on them.
-- Don't move styles into Tailwind or CSS modules unless asked. If you do,
+- Don't move styles into Tailwind or CSS modules unless asked (for Tailwind,
+  re-clone with `--styling tailwind` instead of converting by hand). If you do,
   verify after every component.
 - Interactive state you add (open menu) shouldn't be the default render, or the
   score will drop for the wrong reason.
