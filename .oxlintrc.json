@@ -34,5 +34,5 @@
       }
     }
   ],
-  "ignorePatterns": ["dist", "dittu-out", "tests/fixtures", "node_modules", "coverage"]
+  "ignorePatterns": ["dist", "dittu-out", "tests/fixtures", "web", "node_modules", "coverage"]
 }
