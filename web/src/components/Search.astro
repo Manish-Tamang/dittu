@@ -1,0 +1,104 @@
+---
+import { getDocs } from '../lib/docs';
+import Icon from './Icon.astro';
+
+// Search index: every doc and its h2/h3 headings
+const index = (await getDocs()).flatMap((doc) => [
+  { title: doc.data.title, section: doc.data.section, href: `/docs/${doc.id}` },
+  ...(doc.rendered?.metadata?.headings ?? [])
+    .filter((h) => h.depth === 2 || h.depth === 3)
+    .map((h) => ({ title: h.text, section: doc.data.title, href: `/docs/${doc.id}#${h.slug}` })),
+]);
+---
+
+<dialog
+  data-search
+  class="m-auto mt-[12vh] w-[calc(100%-2rem)] max-w-xl overflow-hidden rounded-xl border border-white/10 bg-neutral-950 p-0 text-neutral-300 shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+>
+  <div class="flex items-center gap-3 border-b border-white/10 px-4">
+    <Icon name="search" class="size-4 text-neutral-500" />
+    <input
+      data-search-input
+      type="search"
+      placeholder="Search docs"
+      autocomplete="off"
+      class="h-12 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-neutral-600"
+    />
+    <kbd class="rounded border border-white/10 px-1.5 text-[0.6875rem] text-neutral-500">Esc</kbd>
+  </div>
+  <ul data-search-results class="max-h-[50vh] overflow-y-auto p-2"></ul>
+  <p data-search-empty class="hidden px-4 py-8 text-center text-sm text-neutral-500">No results</p>
+</dialog>
+
+<script is:inline type="application/json" data-search-index set:html={JSON.stringify(index).replaceAll('<', '\\u003c')}></script>
+
+<script>
+  type Item = { title: string; section: string; href: string };
+
+  const dialog = document.querySelector<HTMLDialogElement>('[data-search]')!;
+  const input = dialog.querySelector<HTMLInputElement>('[data-search-input]')!;
+  const list = dialog.querySelector<HTMLUListElement>('[data-search-results]')!;
+  const empty = dialog.querySelector<HTMLElement>('[data-search-empty]')!;
+  const index: Item[] = JSON.parse(document.querySelector('[data-search-index]')!.textContent!);
+  let active = 0;
+
+  function render() {
+    const q = input.value.trim().toLowerCase();
+    const items = (q ? index.filter((i) => `${i.title} ${i.section}`.toLowerCase().includes(q)) : index).slice(0, 12);
+    active = Math.min(active, Math.max(items.length - 1, 0));
+    empty.classList.toggle('hidden', items.length > 0);
+    list.replaceChildren(
+      ...items.map((item, i) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.href;
+        a.className = `flex flex-col rounded-lg px-3 py-2 text-sm ${i === active ? 'bg-white/10 text-white' : 'text-neutral-300'}`;
+        a.innerHTML = '<span></span><span class="text-xs text-neutral-500"></span>';
+        a.children[0].textContent = item.title;
+        a.children[1].textContent = item.section;
+        a.addEventListener('mouseenter', () => {
+          active = i;
+          render();
+        });
+        li.append(a);
+        return li;
+      }),
+    );
+  }
+
+  function open() {
+    input.value = '';
+    active = 0;
+    render();
+    dialog.showModal();
+  }
+
+  for (const button of document.querySelectorAll('[data-search-open]')) button.addEventListener('click', open);
+  document.addEventListener('keydown', (e) => {
+    const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
+      e.preventDefault();
+      open();
+    }
+  });
+  input.addEventListener('input', () => {
+    active = 0;
+    render();
+  });
+  input.addEventListener('keydown', (e) => {
+    const links = list.querySelectorAll('a');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      active = (active + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % Math.max(links.length, 1);
+      render();
+      list.querySelectorAll('a')[active]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && links[active]) {
+      e.preventDefault();
+      links[active].click();
+      dialog.close();
+    }
+  });
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
