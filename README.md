@@ -56,6 +56,7 @@ components, and calls `verify_clone` to prove nothing visual changed.
 npx @manishtamang/dittu                                        # interactive: banner, then pick URL, frameworks, pages…
 npx @manishtamang/dittu clone https://example.com -y           # no questions: preview + Next.js + Astro, scored
 npx @manishtamang/dittu clone https://example.com -p 5 --build # crawl 5 pages, build and score the apps
+npx @manishtamang/dittu clone https://example.com -s tailwind # Tailwind classes where lossless, rest stays CSS
 npx @manishtamang/dittu verify dittu-out/example.com --targets next
 npx @manishtamang/dittu serve dittu-out/example.com
 ```
@@ -124,9 +125,10 @@ are not copied. You get the frontend, ready to wire to your own logic.
 changes layout in HTML but is dropped by JSX. dittu keeps it explicit so the clone
 renders identically. Refactor freely, and re-run `verify` to check.
 
-**Why plain CSS instead of Tailwind classes?** The original stylesheet is the
-only way to get 99%. A Tailwind conversion pass is on the [roadmap](docs/roadmap.md),
-guarded by `verify`.
+**Can I get Tailwind classes instead of CSS?** Yes: `--styling tailwind`. Every
+rule that can be expressed exactly becomes Tailwind utilities (sites built with
+Tailwind v4 keep their own classes); the rest stays CSS, so scores don't drop.
+See [Tailwind output](docs/tailwind.md).
 
 **Is the 95% score honest?** It's raw pixel identity over the full page,
 including height differences, at desktop and mobile. Diff images are saved next
@@ -142,6 +144,7 @@ to the scores so you can check.
 - [MCP server](docs/mcp.md)
 - [Architecture](docs/architecture.md)
 - [Fidelity and benchmarks](docs/fidelity.md)
+- [Tailwind output](docs/tailwind.md)
 - [Testing](docs/testing.md)
 - [Roadmap](docs/roadmap.md)
 
@@ -150,6 +153,15 @@ to the scores so you can check.
 dittu is for learning, prototyping, design references and migrating sites you
 own. Cloning a site doesn't give you rights to its brand, copy, images or code.
 Read [DISCLAIMER.md](DISCLAIMER.md).
+
+## Related projects
+
+[ditto.site](https://github.com/ion-design/ditto.site) by ion-design takes the
+same capture-what-the-browser-rendered approach as a hosted API and MCP service.
+dittu differs by running as a local CLI, keeping the site's original CSS by
+default (Tailwind output is opt-in and only where it renders identically),
+exporting Astro alongside Next.js, and scoring every clone with pixel-diff
+verification.
 
 ## Contributing
 
