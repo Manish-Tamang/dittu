@@ -7,6 +7,7 @@ import { summary, type CloneAnswers } from './interactive.js';
 const base: CloneAnswers = {
   url: 'https://example.com/',
   frameworks: ['next', 'astro'],
+  styling: 'css',
   pages: 1,
   verify: true,
   build: false,
@@ -31,6 +32,7 @@ describe('summary', () => {
     const s = strip(summary(base));
     expect(s).toContain('Next.js + Astro + preview');
     expect(s).toContain('this page');
+    expect(s).toContain('original CSS');
     expect(s).toContain('dittu-out/example.com');
     expect(s).not.toContain('Breakpoint');
   });
