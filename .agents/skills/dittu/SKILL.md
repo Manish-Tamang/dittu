@@ -15,14 +15,14 @@ of identical pixels.
 
 Prefer the MCP tools when the `dittu` server is connected:
 
-- `clone_website { url, frameworks?, pages?, build?, remove? }`
+- `clone_website { url, frameworks?, styling?, pages?, build?, remove? }`
 - `verify_clone { outDir, targets? }`
 - `read_report { outDir }`
 
 Otherwise use the CLI:
 
 ```bash
-npx @manishtamang/dittu clone <url> [-o <out>] [-p <pages>] [--build] [--remove "<selector>" ...]
+npx @manishtamang/dittu clone <url> [-o <out>] [-p <pages>] [-s css|tailwind] [--build] [--remove "<selector>" ...]
 npx @manishtamang/dittu verify <out> [--targets next,astro]
 ```
 
@@ -30,6 +30,9 @@ npx @manishtamang/dittu verify <out> [--targets next,astro]
 - `build: true` / `--build` also installs and builds the Next/Astro apps and
   scores them. Do this before handing the project over.
 - `remove` drops cookie banners or chat widgets by CSS selector.
+- `styling: "tailwind"` / `-s tailwind` when the user wants Tailwind classes:
+  utilities wherever they render identically (a site built with Tailwind v4
+  keeps its own classes), the rest stays CSS. The score doesn't drop.
 - If Chromium fails to start, run `npx @manishtamang/dittu doctor` and relay its fix.
 
 ## Read the result
