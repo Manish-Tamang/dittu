@@ -1,0 +1,35 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { href, variant = 'primary', size = 'md', class: className } = Astro.props;
+const external = href.startsWith('http');
+
+// dub.co buttons, dark variant: bordered, rounded-lg, ring on hover
+const variants = {
+  primary: 'border-white bg-white text-black hover:bg-neutral-200 hover:ring-4 hover:ring-white/10',
+  secondary: 'border-white/10 bg-black text-white hover:bg-neutral-900 hover:ring-4 hover:ring-white/5',
+};
+const sizes = {
+  sm: 'h-8 px-3 text-[0.8125rem]',
+  md: 'h-10 px-5 text-sm',
+};
+---
+
+<a
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noreferrer' : undefined}
+  class:list={[
+    'inline-flex w-fit items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium transition-all outline-none focus-visible:ring-4 focus-visible:ring-white/20',
+    variants[variant],
+    sizes[size],
+    className,
+  ]}
+>
+  <slot />
+</a>
