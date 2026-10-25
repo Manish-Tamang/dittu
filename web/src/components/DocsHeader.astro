@@ -1,0 +1,44 @@
+---
+import GitHubButton from './GitHubButton.astro';
+import Icon from './Icon.astro';
+import Npm from '../assets/logos/npm.svg';
+---
+
+<header class="sticky top-0 z-30 h-14 border-b border-white/10 bg-black/80 backdrop-blur-lg">
+  <div class="mx-auto flex h-full max-w-[1440px] items-center gap-4 px-4 sm:px-6">
+    <button
+      type="button"
+      data-sidebar-toggle
+      class="-ml-1 grid size-8 place-items-center rounded-md text-neutral-400 hover:bg-white/5 hover:text-white lg:hidden"
+      aria-label="Toggle navigation"
+    >
+      <Icon name="menu" class="size-5" />
+    </button>
+    <a href="/" class="flex items-center gap-2.5 lg:w-[240px]">
+      <span class="font-display text-xl font-bold tracking-tight text-white">dittu</span>
+      <span class="rounded-md border border-white/10 px-1.5 py-0.5 text-xs font-medium text-neutral-400">Docs</span>
+    </a>
+    <button
+      type="button"
+      data-search-open
+      class="ml-auto flex h-8 items-center gap-2 rounded-lg border border-white/10 bg-neutral-950 px-2.5 text-[0.8125rem] text-neutral-500 transition-colors hover:border-white/20 hover:text-neutral-300 sm:w-64 lg:ml-0"
+    >
+      <Icon name="search" class="size-3.5" />
+      <span class="hidden sm:inline">Search docs…</span>
+      <kbd class="ml-auto hidden rounded border border-white/10 px-1.5 font-sans text-[0.6875rem] sm:inline">⌘K</kbd>
+    </button>
+    <nav class="ml-auto hidden items-center gap-1 md:flex">
+      <a href="/" class="rounded-md px-3 py-1.5 text-sm text-neutral-400 hover:bg-white/5 hover:text-white">Home</a>
+      <a
+        href="https://www.npmjs.com/package/@manishtamang/dittu"
+        target="_blank"
+        rel="noreferrer"
+        class="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-neutral-400 hover:bg-white/5 hover:text-white"
+      >
+        <Npm class="size-4" aria-hidden="true" />
+        npm
+      </a>
+    </nav>
+    <GitHubButton />
+  </div>
+</header>
