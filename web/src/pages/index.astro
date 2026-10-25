@@ -1,0 +1,313 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Section from '../components/Section.astro';
+import Heading from '../components/Heading.astro';
+import Button from '../components/Button.astro';
+import CopyCommand from '../components/CopyCommand.astro';
+import Terminal from '../components/Terminal.astro';
+import Icon from '../components/Icon.astro';
+import Rich from '../components/Rich.astro';
+import ClaudeCode from '../assets/logos/claudecode.svg';
+import Cursor from '../assets/logos/cursor.svg';
+import GeminiCli from '../assets/logos/geminicli.svg';
+import Codex from '../assets/logos/codex.svg';
+import { REPO, SITE, benchmarks, faq, steps, support } from '../data';
+import { faqSchema, softwareSchema } from '../lib/seo';
+
+const agents = [
+  { name: 'Claude Code', Logo: ClaudeCode },
+  { name: 'Cursor', Logo: Cursor },
+  { name: 'Gemini CLI', Logo: GeminiCli },
+  { name: 'Codex', Logo: Codex },
+];
+
+const levels = {
+  yes: { icon: 'check', class: 'bg-emerald-500/10 text-emerald-400' },
+  partial: { icon: 'minus', class: 'bg-amber-500/10 text-amber-400' },
+  no: { icon: 'x', class: 'bg-red-500/10 text-red-400' },
+} as const;
+
+const terminal = [
+  ['dittu', 'interactive: pick URL, frameworks, pages…'],
+  ['dittu clone <url> -y', 'preview + Next.js + Astro, scored'],
+  ['dittu clone <url> -p 5 --build', 'crawl 5 pages, build and score'],
+  ['dittu verify <dir>', 're-score an existing clone'],
+  ['dittu serve <dir>', 'preview the clone locally'],
+];
+---
+
+<Layout
+  title={`${SITE.name}: ${SITE.tagline}`}
+  description={SITE.description}
+  schema={[softwareSchema(Astro.site!), faqSchema(faq)]}
+>
+  <Nav />
+  <main>
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="bg-grid pointer-events-none absolute inset-0"></div>
+      <div class="relative mx-auto max-w-[1080px] border-x border-white/10 px-5 pb-16 pt-20 text-center sm:px-10 sm:pt-28">
+        <a
+          href={`${REPO}/releases/tag/v0.1.0`}
+          target="_blank"
+          rel="noreferrer"
+          class="mx-auto flex w-fit items-center divide-x divide-white/10 rounded-full border border-white/10 bg-black text-xs transition-colors hover:border-white/20 sm:text-sm"
+        >
+          <span class="px-3 py-1.5 text-neutral-200">dittu v0.1.0 is out</span>
+          <span class="flex items-center gap-1 px-3 py-1.5 text-neutral-500">
+            Release notes <Icon name="arrow" class="size-3" />
+          </span>
+        </a>
+        <h1
+          class="mx-auto mt-6 max-w-3xl font-display text-5xl font-medium tracking-tight text-white sm:text-7xl"
+        >
+          Clone any website
+        </h1>
+        <p class="mx-auto mt-5 max-w-xl text-lg/8 text-neutral-400 sm:text-xl/9">
+          Turn any website into an editable Next.js or Astro project, verified pixel by pixel.
+        </p>
+        <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <CopyCommand command="npx @manishtamang/dittu" />
+          <Button href={REPO} variant="secondary">
+            <Icon name="github" />
+            Star on GitHub
+          </Button>
+        </div>
+        <p class="mt-5 text-sm text-neutral-500">
+          Layout, CSS, fonts, images and scroll animations. Not the backend.
+        </p>
+      </div>
+    </section>
+
+    <section class="border-t border-white/10 bg-neutral-950">
+      <div class="relative mx-auto max-w-[1080px] border-x border-white/10 px-5 py-16 sm:px-10">
+        <div
+          class="pointer-events-none absolute inset-x-0 top-0 mx-auto h-64 max-w-2xl rounded-full bg-white/5 blur-3xl"
+        >
+        </div>
+        <div class="relative mx-auto max-w-3xl text-left">
+          <Terminal />
+        </div>
+      </div>
+    </section>
+
+    <!-- Agents -->
+    <section class="border-t border-white/10">
+      <div class="mx-auto max-w-[1080px] border-x border-white/10 px-5 py-8 sm:px-10">
+        <p class="text-center text-sm text-neutral-500">One CLI, one MCP server, and skills for your coding agent</p>
+        <ul class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {
+            agents.map(({ name, Logo }) => (
+              <li class="flex h-20 items-center justify-center gap-3 rounded-xl bg-white/[0.03] font-display text-lg font-medium text-neutral-400 ring-1 ring-white/5 transition-colors hover:text-white">
+                <Logo class="size-7 shrink-0" aria-hidden="true" />
+                {name}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- Statement -->
+    <Section inner="py-24 sm:py-32">
+      <div class="bg-dots pointer-events-none absolute inset-0"></div>
+      <div class="relative mx-auto max-w-2xl font-display text-2xl/snug font-medium tracking-tight sm:text-4xl/tight">
+        <p class="text-white">Most cloners screenshot a page and ask an LLM to redraw it.</p>
+        <p class="mt-6 text-neutral-300">
+          dittu copies what the browser actually rendered: the live DOM, the original CSS, every font and image.
+        </p>
+        <p class="mt-6 text-neutral-500">Then it screenshots both and checks the result.</p>
+        <p class="mt-6 text-neutral-700">Because "looks close" isn't 99.95%.</p>
+      </div>
+    </Section>
+
+    <!-- Quick start -->
+    <Section id="quick-start">
+      <Heading label="Quick start" title="Clone in one command" color="bg-emerald-500">
+        Set it up once for your agent, or run it straight from the terminal. Requires Node 20.11+.
+      </Heading>
+      <div class="mt-12 grid gap-4 lg:grid-cols-3">
+        <div class="flex flex-col rounded-xl border border-white/10 bg-neutral-950 p-6">
+          <span class="font-mono text-xs text-neutral-500">01</span>
+          <h3 class="mt-3 font-display text-xl font-medium text-white">Set up your agent</h3>
+          <p class="mt-2 flex-1 text-sm/6">
+            Registers the MCP server and installs the skills for every agent it finds: Claude Code, Cursor, Gemini CLI,
+            Codex.
+          </p>
+          <CopyCommand command="npx @manishtamang/dittu setup" compact class="mt-6 sm:w-full" />
+        </div>
+        <div class="flex flex-col rounded-xl border border-white/10 bg-neutral-950 p-6">
+          <span class="font-mono text-xs text-neutral-500">02</span>
+          <h3 class="mt-3 font-display text-xl font-medium text-white">Ask your agent</h3>
+          <blockquote class="mt-4 rounded-lg border border-white/10 bg-black p-4 text-sm/6 text-neutral-200">
+            Clone https://example.com into Next.js and make the pricing cards a reusable component.
+          </blockquote>
+          <p class="mt-4 flex-1 text-sm/6">
+            The agent calls <code class="font-mono text-neutral-200">clone_website</code>, refactors the components,
+            and calls <code class="font-mono text-neutral-200">verify_clone</code> to prove nothing visual changed.
+          </p>
+        </div>
+        <div class="flex flex-col rounded-xl border border-white/10 bg-neutral-950 p-6">
+          <span class="font-mono text-xs text-neutral-500">03</span>
+          <h3 class="mt-3 font-display text-xl font-medium text-white">Or use the terminal</h3>
+          <p class="mt-2 text-sm/6">
+            No agent needed. Install with <code class="font-mono text-neutral-200">npm i -g @manishtamang/dittu</code>,
+            or use <code class="font-mono text-neutral-200">npx @manishtamang/dittu</code> in place of <code
+              class="font-mono text-neutral-200">dittu</code
+            >.
+          </p>
+          <ul class="mt-4 flex-1 space-y-3">
+            {
+              terminal.map(([command, note]) => (
+                <li class="min-w-0">
+                  <code class="block font-mono text-xs text-neutral-200">{command}</code>
+                  <span class="text-xs text-neutral-500">{note}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+      <p class="mt-6 text-sm text-neutral-500">
+        Check your machine first with <code class="font-mono text-neutral-300">npx @manishtamang/dittu doctor</code>.
+        On Linux/WSL you may need <code class="font-mono text-neutral-300">sudo npx playwright install-deps chromium</code>.
+      </p>
+    </Section>
+
+    <!-- How it works -->
+    <Section id="how-it-works">
+      <Heading label="How it works" title="Copies what the browser rendered" color="bg-violet-500">
+        No screenshots redrawn by an LLM. A deterministic pipeline captures the page, exports it, and proves the
+        result with pixel diffs.
+      </Heading>
+      <ol
+        class="mt-12 grid overflow-hidden rounded-xl border border-white/10 sm:grid-cols-2 lg:grid-cols-3 [&>li]:border-white/10"
+      >
+        {
+          steps.map((step, i) => (
+            <li class="-mb-px -mr-px border-b border-r p-6 last:sm:col-span-2 last:lg:col-span-3">
+              <span class="font-mono text-xs text-neutral-500">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-3 font-medium text-white">{step.title}</h3>
+              <p class="mt-2 text-sm/6">
+                <Rich text={step.body} />
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+      <Button href="/docs/architecture" variant="secondary" class="mt-8">
+        Read the architecture <Icon name="arrow" class="size-3.5" />
+      </Button>
+    </Section>
+
+    <!-- What you can clone -->
+    <Section id="support">
+      <Heading label="Coverage" title="What you can clone" color="bg-sky-500">
+        Works on the post-hydration DOM, so it doesn't matter which framework built the site.
+      </Heading>
+      <div class="mt-12 overflow-x-auto rounded-xl border border-white/10">
+        <table class="w-full min-w-[560px] text-left text-sm">
+          <thead class="bg-neutral-950 text-xs text-neutral-500">
+            <tr>
+              <th class="px-5 py-3 font-medium">Site type</th>
+              <th class="px-5 py-3 font-medium">Support</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {
+              support.map((row) => (
+                <tr>
+                  <td class="px-5 py-3.5 text-neutral-200">{row.site}</td>
+                  <td class="px-5 py-3.5">
+                    <span class="flex items-center gap-2.5">
+                      <span class:list={['grid size-5 shrink-0 place-items-center rounded-md', levels[row.level].class]}>
+                        <Icon name={levels[row.level].icon} class="size-3" />
+                      </span>
+                      <Rich text={row.note} />
+                    </span>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </Section>
+
+    <!-- Benchmarks -->
+    <Section id="benchmarks">
+      <Heading label="Benchmarks" title="99%+ on real sites" color="bg-orange-500">
+        Raw pixel identity over the full page, including height differences, at 1440px and 390px.
+      </Heading>
+      <div class="mt-12 overflow-x-auto rounded-xl border border-white/10">
+        <table class="w-full min-w-[640px] text-left text-sm">
+          <thead class="bg-neutral-950 text-xs text-neutral-500">
+            <tr>
+              <th class="px-5 py-3 font-medium">Site</th>
+              <th class="px-5 py-3 font-medium">Stack</th>
+              <th class="px-5 py-3 text-right font-medium">Desktop</th>
+              <th class="px-5 py-3 text-right font-medium">Mobile</th>
+              <th class="px-5 py-3 text-right font-medium">Built apps</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {
+              benchmarks.map((row) => (
+                <tr>
+                  <td class="px-5 py-3.5 font-mono text-[0.8125rem] text-white">{row.site}</td>
+                  <td class="px-5 py-3.5">{row.stack}</td>
+                  <td class="px-5 py-3.5 text-right font-mono text-[0.8125rem] text-emerald-400">{row.desktop}</td>
+                  <td class="px-5 py-3.5 text-right font-mono text-[0.8125rem] text-emerald-400">{row.mobile}</td>
+                  <td class="px-5 py-3.5 text-right font-mono text-[0.8125rem] text-neutral-300">{row.built}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <Button href="/docs/fidelity" variant="secondary" class="mt-8">
+        Methodology and limits <Icon name="arrow" class="size-3.5" />
+      </Button>
+    </Section>
+
+    <!-- FAQ -->
+    <Section id="faq">
+      <div class="grid gap-12 lg:grid-cols-[1fr_1.6fr]">
+        <Heading label="FAQ" title="Questions" color="bg-pink-500" />
+        <div class="divide-y divide-white/10 border-y border-white/10">
+          {
+            faq.map((item) => (
+              <details class="group py-5">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+                  {item.q}
+                  <span class="text-neutral-500 transition-transform group-open:rotate-45">
+                    <Icon name="x" class="size-4 rotate-45" />
+                  </span>
+                </summary>
+                <p class="mt-3 text-sm/6">{item.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </Section>
+
+    <!-- CTA -->
+    <section class="relative overflow-hidden border-t border-white/10">
+      <div class="bg-grid pointer-events-none absolute inset-0 rotate-180"></div>
+      <div class="relative mx-auto max-w-[1080px] border-x border-white/10 px-5 py-24 text-center sm:px-10">
+        <h2 class="font-display text-4xl font-medium tracking-tight text-white sm:text-5xl">Clone your first site</h2>
+        <p class="mx-auto mt-4 max-w-md text-neutral-400">
+          Free and open source. Get an editable Next.js or Astro project, scored against the original.
+        </p>
+        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <CopyCommand command="npx @manishtamang/dittu clone https://example.com" />
+          <Button href="/docs" variant="secondary">Read the docs</Button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
