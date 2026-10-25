@@ -1,0 +1,165 @@
+---
+import { render } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Icon from '../../components/Icon.astro';
+import DocActions from '../../components/DocActions.astro';
+import { getDocs } from '../../lib/docs';
+import { articleSchema, breadcrumbSchema } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const docs = await getDocs();
+  return docs.map((doc, i) => ({ params: { slug: doc.id }, props: { doc, prev: docs[i - 1], next: docs[i + 1] } }));
+}
+
+const { doc, prev, next } = Astro.props;
+const { Content, headings } = await render(doc);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const url = new URL(`/docs/${doc.id}`, Astro.site);
+const markdown = new URL(`/docs/${doc.id}.md`, Astro.site).href;
+const schema = [
+  articleSchema({ title: doc.data.title, description: doc.data.description, url, section: doc.data.section }),
+  breadcrumbSchema([
+    { name: 'Home', url: new URL('/', Astro.site) },
+    { name: 'Docs', url: new URL('/docs', Astro.site) },
+    { name: doc.data.title, url },
+  ]),
+];
+---
+
+<DocsLayout
+  title={`${doc.data.title} · dittu docs`}
+  description={doc.data.description}
+  current={doc.id}
+  schema={schema}
+  markdown={`/docs/${doc.id}.md`}
+>
+  <div class="xl:grid xl:grid-cols-[1fr_240px]">
+    <article class="mx-auto w-full min-w-0 max-w-3xl px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-neutral-500">{doc.data.section}</p>
+          <h1 class="mt-2 font-display text-3xl font-medium tracking-tight text-white sm:text-4xl">{doc.data.title}</h1>
+        </div>
+        <DocActions markdown={markdown} />
+      </div>
+      {doc.data.description && <p class="mt-3 text-lg/8 text-neutral-400">{doc.data.description}</p>}
+
+      <div class="docs-prose mt-10">
+        <Content />
+      </div>
+
+      <div class="mt-16 flex items-center justify-between border-t border-white/10 pt-6 text-sm">
+        <a
+          href={doc.data.editUrl}
+          target="_blank"
+          rel="noreferrer"
+          class="flex items-center gap-1.5 text-neutral-500 transition-colors hover:text-white"
+        >
+          <Icon name="github" class="size-3.5" />
+          Edit this page on GitHub
+        </a>
+      </div>
+
+      <nav class="mt-6 grid gap-3 sm:grid-cols-2">
+        {
+          prev ? (
+            <a
+              href={`/docs/${prev.id}`}
+              class="rounded-xl border border-white/10 px-4 py-3 transition-colors hover:border-white/20 hover:bg-white/[0.02]"
+            >
+              <span class="text-xs text-neutral-500">Previous</span>
+              <span class="mt-0.5 block font-medium text-white">{prev.data.title}</span>
+            </a>
+          ) : (
+            <a
+              href="/docs"
+              class="rounded-xl border border-white/10 px-4 py-3 transition-colors hover:border-white/20 hover:bg-white/[0.02]"
+            >
+              <span class="text-xs text-neutral-500">Previous</span>
+              <span class="mt-0.5 block font-medium text-white">Introduction</span>
+            </a>
+          )
+        }
+        {
+          next && (
+            <a
+              href={`/docs/${next.id}`}
+              class="rounded-xl border border-white/10 px-4 py-3 text-right transition-colors hover:border-white/20 hover:bg-white/[0.02] sm:col-start-2"
+            >
+              <span class="text-xs text-neutral-500">Next</span>
+              <span class="mt-0.5 block font-medium text-white">{next.data.title}</span>
+            </a>
+          )
+        }
+      </nav>
+    </article>
+
+    <aside class="hidden xl:block">
+      <div class="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto py-14 pr-6">
+        {
+          toc.length > 0 && (
+            <>
+              <p class="text-xs font-medium text-neutral-500">On this page</p>
+              <ul class="mt-3 space-y-2 border-l border-white/10">
+                {toc.map((h) => (
+                  <li>
+                    <a
+                      href={`#${h.slug}`}
+                      data-toc={h.slug}
+                      class:list={[
+                        '-ml-px block border-l border-transparent text-[0.8125rem] text-neutral-500 transition-colors hover:text-white data-[active]:border-white data-[active]:text-white',
+                        h.depth === 3 ? 'pl-6' : 'pl-3',
+                      ]}
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
+        }
+      </div>
+    </aside>
+  </div>
+</DocsLayout>
+
+<script>
+  // Copy buttons on code blocks
+  for (const pre of document.querySelectorAll<HTMLPreElement>('.docs-prose pre')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'group relative';
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Copy';
+    button.className =
+      'absolute right-2 top-2 rounded-md border border-white/10 bg-black px-2 py-1 text-xs text-neutral-400 opacity-0 transition hover:text-white group-hover:opacity-100 focus:opacity-100';
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(pre.querySelector('code')?.innerText ?? '');
+      button.textContent = 'Copied';
+      setTimeout(() => (button.textContent = 'Copy'), 1500);
+    });
+    wrap.append(button);
+  }
+
+  // Highlight the heading currently in view
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')].map((a) => [a.dataset.toc, a]));
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        for (const a of links.values()) delete a.dataset.active;
+        const link = links.get(entry.target.id);
+        if (link) link.dataset.active = '';
+      }
+    },
+    { rootMargin: '0px 0px -75% 0px' },
+  );
+  for (const id of links.keys()) {
+    const heading = id && document.getElementById(id);
+    if (heading) observer.observe(heading);
+  }
+</script>
