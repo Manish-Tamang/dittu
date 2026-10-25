@@ -1,0 +1,14 @@
+---
+// Plain text with `backtick` spans rendered as inline code.
+interface Props {
+  text: string;
+}
+
+const parts = Astro.props.text.split('`');
+---
+
+{
+  parts.map((part, i) =>
+    i % 2 ? <code class="whitespace-nowrap font-mono text-[0.92em] text-neutral-200">{part}</code> : part,
+  )
+}
