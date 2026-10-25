@@ -1,0 +1,32 @@
+---
+const scores = [
+  ['preview', '1440px', '99.95%'],
+  ['next', '1440px', '99.95%'],
+  ['astro', '1440px', '99.95%'],
+  ['preview', '390px', '99.89%'],
+  ['next', '390px', '99.89%'],
+  ['astro', '390px', '99.89%'],
+];
+---
+
+<div class="overflow-hidden rounded-xl border border-white/10 bg-neutral-950 shadow-2xl shadow-black">
+  <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+    <span class="size-3 rounded-full bg-[#ff5f57]"></span>
+    <span class="size-3 rounded-full bg-[#febc2e]"></span>
+    <span class="size-3 rounded-full bg-[#28c840]"></span>
+    <span class="ml-2 font-mono text-xs text-neutral-500">~/projects</span>
+  </div>
+  <pre
+    class="overflow-x-auto p-5 font-mono text-[0.8125rem]/6 text-neutral-300"><span class="text-neutral-500">$</span> dittu clone https://dub.co/home --build
+
+<span class="text-neutral-500">›</span> Capturing https://dub.co/home
+  <span class="text-neutral-500">1,680,755 chars of markup, 6 stylesheets, 33 animations, 13 JS-responsive elements</span>
+<span class="text-emerald-400">✓</span> Static preview → <span class="text-sky-300">dittu-out/dub.co/preview</span>
+<span class="text-emerald-400">✓</span> Next.js project → <span class="text-sky-300">dittu-out/dub.co/next</span>
+<span class="text-emerald-400">✓</span> Astro project  → <span class="text-sky-300">dittu-out/dub.co/astro</span>
+
+<span class="text-neutral-500">Visual match (1 − differing pixels / total)</span>
+{scores.map(([target, width, score]) => (
+  <>{`  ${target.padEnd(8)} /home  ${width.padStart(6)}   `}<span class="text-emerald-400">{score}</span>{'\n'}</>
+))}<span class="text-emerald-400">✓ All checks ≥ 95% (lowest 99.89%)</span></pre>
+</div>
