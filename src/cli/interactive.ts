@@ -2,7 +2,7 @@ import { isAbsolute, relative } from 'node:path';
 import * as p from '@clack/prompts';
 import pc from 'picocolors';
 import { DEFAULTS, defaultOutDir } from '../config/defaults.js';
-import type { Framework } from '../domain/report.js';
+import type { Framework, Styling } from '../domain/report.js';
 import { withScheme } from './options.js';
 
 /** Clone settings the prompts can fill in (mirrors the `clone` flags). */
@@ -10,6 +10,7 @@ export interface CloneAnswers {
   url?: string;
   out?: string;
   frameworks: Framework[];
+  styling: Styling;
   pages: number;
   verify: boolean;
   build: boolean;
@@ -75,6 +76,23 @@ export async function promptClone(current: CloneAnswers, explicit: Explicit): Pr
           ],
           initialValues: a.frameworks,
           required: false,
+        }),
+      );
+    }
+
+    if (!explicit.has('styling')) {
+      a.styling = answer(
+        await p.select<Styling>({
+          message: 'How should styles be written?',
+          options: [
+            { value: 'css', label: 'Original CSS', hint: 'the site’s own stylesheet, highest fidelity' },
+            {
+              value: 'tailwind',
+              label: 'Tailwind CSS',
+              hint: 'utility classes where they render identically, the rest stays CSS',
+            },
+          ],
+          initialValue: a.styling,
         }),
       );
     }
@@ -204,6 +222,7 @@ export function summary(a: CloneAnswers): string {
         ? a.frameworks.map((f) => (f === 'next' ? 'Next.js' : 'Astro')).join(' + ') + ' + preview'
         : 'static preview only',
     ],
+    ['Styles', a.styling === 'tailwind' ? 'Tailwind CSS (+ original CSS where needed)' : 'original CSS'],
     ['Pages', a.pages === 1 ? 'this page' : `up to ${a.pages}`],
     ['Check', a.build ? 'preview + built apps' : a.verify ? 'preview' : 'skip'],
     ['Save to', displayPath(a.out ?? defaultOutDir(a.url ?? 'https://site'))],
