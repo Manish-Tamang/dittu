@@ -29,6 +29,7 @@ Clone a page (or crawl a site) and score the result.
 | `url`        | string                  | required             | scheme optional                                   |
 | `outDir`     | string                  | `./dittu-out/<host>` |                                                   |
 | `frameworks` | `("next" \| "astro")[]` | both                 | projects to generate                              |
+| `styling`    | `"css" \| "tailwind"`   | `"css"`              | Tailwind utilities where lossless, rest stays CSS |
 | `pages`      | int 1–50                | 1                    | same-site crawl (robots.txt respected)            |
 | `verify`     | boolean                 | true                 | score preview vs original                         |
 | `build`      | boolean                 | false                | also `npm install` + build + score generated apps |
