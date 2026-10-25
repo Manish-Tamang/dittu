@@ -1,0 +1,139 @@
+---
+import Icon from './Icon.astro';
+import ChatGpt from '../assets/logos/openai.svg';
+import Claude from '../assets/logos/claude.svg';
+import ClaudeCode from '../assets/logos/claudecode.svg';
+import Cursor from '../assets/logos/cursor.svg';
+import Perplexity from '../assets/logos/perplexity.svg';
+
+interface Props {
+  /** Absolute URL of this page's markdown version. */
+  markdown: string;
+}
+
+const { markdown } = Astro.props;
+const prompt = encodeURIComponent(`Read ${markdown} so I can ask you questions about dittu.`);
+const mcp = { command: 'npx', args: ['-y', '@manishtamang/dittu', 'mcp'] };
+const cursorInstall = `cursor://anysphere.cursor-deeplink/mcp/install?name=dittu&config=${btoa(JSON.stringify(mcp))}`;
+const claudeCommand = 'claude mcp add dittu -- npx -y @manishtamang/dittu mcp';
+
+const items = [
+  { label: 'View as Markdown', hint: 'Plain text for LLMs', href: markdown, icon: 'markdown' },
+  { label: 'Open in ChatGPT', hint: 'Ask questions about this page', href: `https://chatgpt.com/?hints=search&q=${prompt}`, Logo: ChatGpt },
+  { label: 'Open in Claude', hint: 'Ask questions about this page', href: `https://claude.ai/new?q=${prompt}`, Logo: Claude },
+  { label: 'Open in Perplexity', hint: 'Ask questions about this page', href: `https://www.perplexity.ai/search/new?q=${prompt}`, Logo: Perplexity },
+  { label: 'Connect to Cursor', hint: 'Install the dittu MCP server', href: cursorInstall, Logo: Cursor },
+  { label: 'Copy for Claude Code', hint: 'claude mcp add command', copy: claudeCommand, Logo: ClaudeCode },
+];
+const itemClass =
+  'flex w-full items-start gap-3 rounded-md px-2.5 py-2 text-left transition-colors hover:bg-white/[0.06] focus-visible:bg-white/[0.06] outline-none';
+---
+
+<div class="relative flex shrink-0" data-doc-actions>
+  <button
+    type="button"
+    data-copy-page={markdown}
+    class="flex h-8 items-center gap-2 rounded-l-lg border border-white/10 bg-black px-3 text-[0.8125rem] font-medium text-white transition-colors hover:bg-neutral-900"
+  >
+    <Icon name="copy" class="size-3.5" />
+    <span data-label>Copy page</span>
+  </button>
+  <button
+    type="button"
+    data-menu-toggle
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-label="More ways to use this page"
+    class="grid h-8 w-8 place-items-center rounded-r-lg border border-l-0 border-white/10 bg-black text-neutral-400 transition-colors hover:bg-neutral-900 hover:text-white"
+  >
+    <Icon name="chevron" class="size-3.5" />
+  </button>
+  <div
+    data-menu
+    role="menu"
+    class="absolute right-0 top-full z-30 mt-2 hidden w-72 rounded-xl border border-white/10 bg-neutral-950 p-1.5 shadow-2xl shadow-black data-[open]:block"
+  >
+    <button type="button" role="menuitem" data-copy-page={markdown} class={itemClass}>
+      <Icon name="copy" class="mt-0.5 size-4 shrink-0 text-neutral-300" />
+      <span>
+        <span class="block text-sm text-white">Copy page</span>
+        <span class="block text-xs text-neutral-500">Copy as Markdown for LLMs</span>
+      </span>
+    </button>
+    {
+      items.map(({ label, hint, href, copy, icon, Logo }) => {
+        const content = (
+          <>
+            {Logo ? (
+              <Logo class="mt-0.5 size-4 shrink-0 text-neutral-300" aria-hidden="true" />
+            ) : (
+              <Icon name={icon as 'markdown'} class="mt-0.5 size-4 shrink-0 text-neutral-300" />
+            )}
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm text-white">{label}</span>
+              <span class="block truncate text-xs text-neutral-500">{hint}</span>
+            </span>
+            {href && <Icon name="arrow" class="mt-1 size-3 shrink-0 text-neutral-600" />}
+          </>
+        );
+        return copy ? (
+          <button type="button" role="menuitem" data-copy-text={copy} class={itemClass}>
+            {content}
+          </button>
+        ) : (
+          <a role="menuitem" href={href} target="_blank" rel="noreferrer" class={itemClass}>
+            {content}
+          </a>
+        );
+      })
+    }
+  </div>
+</div>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-doc-actions]')) {
+    const menu = root.querySelector<HTMLElement>('[data-menu]')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+    const label = root.querySelector<HTMLElement>('[data-label]')!;
+
+    const setOpen = (open: boolean) => {
+      menu.toggleAttribute('data-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    const flash = (text: string) => {
+      label.textContent = text;
+      setTimeout(() => (label.textContent = 'Copy page'), 1500);
+    };
+
+    toggle.addEventListener('click', () => setOpen(!menu.hasAttribute('data-open')));
+    document.addEventListener('click', (e) => {
+      if (!root.contains(e.target as Node)) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    for (const button of root.querySelectorAll<HTMLButtonElement>('[data-copy-page]')) {
+      button.addEventListener('click', async () => {
+        try {
+          const text = await fetch(button.dataset.copyPage!).then((r) => r.text());
+          await navigator.clipboard.writeText(text);
+          flash('Copied');
+        } catch {
+          flash('Copy failed');
+        }
+        setOpen(false);
+      });
+    }
+    for (const button of root.querySelectorAll<HTMLButtonElement>('[data-copy-text]')) {
+      button.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(button.dataset.copyText!);
+        flash('Command copied');
+        setOpen(false);
+      });
+    }
+  }
+</script>
