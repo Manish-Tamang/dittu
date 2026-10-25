@@ -16,7 +16,11 @@ npm run dev
 
 - \`${pages}\` — one route per cloned page
 - \`${components}\` — page sections (\`shared/\` = used on several pages)
-- \`public/assets/\` — images, fonts, and each page's original CSS (\`assets/css\`)
+- \`public/assets/\` — images, fonts, and each page's original CSS (\`assets/css\`)${
+    site.tailwind
+      ? `\n- \`${kind === 'next' ? 'app/globals.css' : 'src/styles/global.css'}\` — Tailwind CSS entry: styles are Tailwind classes where they render identically; the rest stays in \`assets/css\``
+      : ''
+  }
 - \`public/assets/dittu-motion.js\` — replays recorded scroll-reveal animations
 
 Interactivity (menus, tabs, carousels, forms) is not copied: wire it up in the components.
