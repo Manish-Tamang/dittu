@@ -1,0 +1,36 @@
+---
+import Button from './Button.astro';
+import GitHubButton from './GitHubButton.astro';
+
+const links = [
+  { name: 'How it works', href: '/#how-it-works' },
+  { name: 'Benchmarks', href: '/#benchmarks' },
+  { name: 'FAQ', href: '/#faq' },
+  { name: 'Docs', href: '/docs' },
+];
+---
+
+<header class="sticky top-0 z-30 border-b border-white/10 bg-black/70 backdrop-blur-lg">
+  <nav class="mx-auto flex h-14 max-w-[1080px] items-center justify-between px-5 sm:px-10">
+    <a href="/" class="font-display text-xl font-bold tracking-tight text-white">dittu</a>
+    <ul class="hidden items-center gap-1 md:flex">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="rounded-md px-3 py-1.5 text-sm text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+            >
+              {link.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="flex items-center gap-2">
+      <GitHubButton />
+      <Button href="/docs/installation" size="sm">Get started</Button>
+    </div>
+  </nav>
+</header>
+
