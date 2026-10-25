@@ -107,6 +107,10 @@ Dependency direction: `cli`/`server` → `pipeline` → `capture`/`transform`/`e
   `layer()`/`supports()`/media, `url()`/`image-set()` rewriting, per-sheet `media`.
 - `assets.ts`: bodies from the network recorder first (same session), then
   fetches for referenced-but-unloaded files (all `srcset` sizes). Unused font subsets stay remote.
+- `tailwind/` (`--styling tailwind`): class rules → Tailwind utilities where
+  lossless. Each candidate is compiled by Tailwind and checked declaration by
+  declaration; the cascade is simulated per element before and after; the rest
+  goes into layers below Tailwind's utilities. See [tailwind.md](tailwind.md).
 - `components.ts`: split the body into sections (`Header`, `Hero`,
   `PricingSection`, …). Identical sections across pages become `shared/` components.
 
