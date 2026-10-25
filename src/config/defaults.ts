@@ -1,3 +1,4 @@
+import type { Styling } from '../domain/report.js';
 import type { Viewport } from '../domain/snapshot.js';
 
 /** Versions pinned in generated projects. */
@@ -9,6 +10,9 @@ export const VERSIONS = {
   typescript: '5.9.3',
   typesReact: '19.3.0',
   typesNode: '24.19.2',
+  // Same version dittu converts with (package.json "tailwindcss"), so builds match the preview.
+  tailwind: '4.3.3',
+  postcss: '8.5.31',
 } as const;
 
 export const DEFAULTS = {
@@ -19,6 +23,8 @@ export const DEFAULTS = {
   waitMs: 1500,
   verifyWidths: [1440, 390],
   frameworks: ['next', 'astro'] as ('next' | 'astro')[],
+  /** css: keep the original stylesheet; tailwind: convert class rules to utilities where lossless. */
+  styling: 'css' as Styling,
   /** Fidelity target used for pass/fail reporting. */
   passScore: 0.95,
 } as const;
