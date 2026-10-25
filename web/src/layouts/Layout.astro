@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+import { AUTHOR, SITE } from '../data';
+import { websiteSchema } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Open Graph type: "website" for landing pages, "article" for docs. */
+  type?: 'website' | 'article';
+  /** Extra schema.org objects for this page, rendered as JSON-LD. */
+  schema?: object[];
+  /** A markdown version of this page, advertised for LLMs and agents. */
+  markdown?: string;
+}
+
+const { title, description, type = 'website', schema = [], markdown } = Astro.props;
+const site = Astro.site!;
+// Clean path: build output paths end in .html, the public URLs don't
+const path = Astro.url.pathname.replace(/(index)?\.html$/, '').replace(/(.)\/$/, '$1') || '/';
+const canonical = new URL(path, site);
+const image = new URL('/og.png', site);
+const jsonLd = [websiteSchema(site), ...schema];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content={AUTHOR.name} />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name}: ${SITE.tagline}`} />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:creator" content={AUTHOR.x} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+    {markdown && <link rel="alternate" type="text/markdown" title="Markdown" href={markdown} />}
+
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700&display=swap" />
+
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll('<', '\\u003c')}></script>)}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
