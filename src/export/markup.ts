@@ -20,6 +20,7 @@ function headTags(page: PageModel): string {
   if (page.description) tags.push(`<meta name="description" content="${escAttr(page.description)}">`);
   for (const i of page.icons) tags.push(`<link${attrString(iconAttrs(i))}>`);
   tags.push(`<link rel="stylesheet" href="${page.css}">`);
+  if (page.tailwindCss) tags.push(`<link rel="stylesheet" href="${page.tailwindCss}">`);
   return tags.join('\n    ');
 }
 
