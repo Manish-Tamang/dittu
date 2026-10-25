@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/geist-mono';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Satoshi', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-black font-sans text-neutral-400 antialiased;
+  }
+  ::selection {
+    @apply bg-white/20 text-white;
+  }
+}
+
+/* dub.co-style hero grid, faded toward the edges */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.bg-dots {
+  background-image: radial-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px);
+  background-size: 16px 16px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+
+/* Docs rendered from GitHub markdown */
+.docs-prose {
+  @apply prose prose-invert max-w-none prose-neutral;
+  @apply prose-headings:scroll-mt-20 prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight;
+  @apply prose-h2:mt-12 prose-h2:border-t prose-h2:border-white/10 prose-h2:pt-10 prose-h2:text-2xl;
+  @apply prose-a:text-white prose-a:decoration-white/30 prose-a:underline-offset-4 hover:prose-a:decoration-white;
+  @apply prose-strong:text-white prose-th:text-neutral-300 prose-td:text-neutral-400;
+}
+.docs-prose :where(p, li) {
+  @apply text-neutral-400;
+}
+.docs-prose :not(pre) > code {
+  @apply rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[0.85em] font-normal text-neutral-200;
+}
+.docs-prose :not(pre) > code::before,
+.docs-prose :not(pre) > code::after {
+  content: none;
+}
+.docs-prose pre {
+  @apply rounded-xl border border-white/10 text-[0.8125rem]/6;
+  background-color: var(--color-neutral-950) !important;
+}
+.docs-prose table {
+  @apply block overflow-x-auto text-sm;
+}
+.docs-prose td code {
+  @apply whitespace-nowrap;
+}
+.docs-prose th,
+.docs-prose td {
+  @apply px-3 py-2;
+}
