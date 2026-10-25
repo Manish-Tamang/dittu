@@ -69,7 +69,8 @@ function openTag(el: Element, inSvg: boolean): string {
   const { [STYLE_SLOT]: styleSlot, dataDittuSpreadProps, ...properties } = el.properties;
   const shallow = toHtml(
     { type: 'element', tagName: el.tagName, properties, children: [] },
-    { space: inSvg ? 'svg' : 'html' },
+    // Keep `'` raw: Tailwind scans the source, and `&#x27;` inside a class would not match the real class.
+    { space: inSvg ? 'svg' : 'html', allowDangerousCharacters: true },
   );
   // Whatever closing form the serializer chose (`></x>`, `>`, ` />`), keep only the opening part.
   let open = shallow.replace(/<\/[^<>]+>$/, '').replace(/\s*\/?>$/, '');
@@ -153,18 +154,19 @@ export class AstroWriter {
 }
 
 function frontmatter(file: string, dir: string, ctx: JsxContext, self: string | null, extra: string[]): string {
-  const lines: string[] = [];
-  for (const name of [...ctx.used].toSorted()) {
-    if (name === self) continue;
-    const def = ctx.components.get(name);
-    if (def) lines.push(`import ${name} from '${importPath(file, componentFile(dir, def))}';`);
-  }
+  // Data constants first: components they reference (icons in a list) need imports too.
   const consts = ctx.consts.map((c) => {
     const type: PropType | undefined = c.component
       ? { kind: 'list', item: ctx.components.get(c.component)!.props }
       : c.type;
     return `const ${c.name} = ${printExpr(valueExpr(c.items, type, ctx))};`;
   });
+  const lines: string[] = [];
+  for (const name of [...ctx.used].toSorted()) {
+    if (name === self) continue;
+    const def = ctx.components.get(name);
+    if (def) lines.push(`import ${name} from '${importPath(file, componentFile(dir, def))}';`);
+  }
   return [...lines, ...extra, ...consts].join('\n');
 }
 
@@ -195,7 +197,10 @@ export async function exportAstro(site: SiteModel, recon: Reconstruction, outDir
         private: true,
         type: 'module',
         scripts: { dev: 'astro dev', build: 'astro build', preview: 'astro preview' },
-        dependencies: { astro: VERSIONS.astro },
+        dependencies: {
+          astro: VERSIONS.astro,
+          ...(site.tailwind ? { tailwindcss: VERSIONS.tailwind, '@tailwindcss/vite': VERSIONS.tailwind } : {}),
+        },
       },
       null,
       2,
@@ -203,11 +208,11 @@ export async function exportAstro(site: SiteModel, recon: Reconstruction, outDir
   );
   write(
     join(dir, 'astro.config.mjs'),
-    `import { defineConfig } from 'astro/config';
+    `import { defineConfig } from 'astro/config';${site.tailwind ? "\nimport tailwindcss from '@tailwindcss/vite';" : ''}
 
 export default defineConfig({
   // Keep whitespace exactly as captured: it affects inline layout.
-  compressHTML: false,
+  compressHTML: false,${site.tailwind ? '\n  vite: { plugins: [tailwindcss()] },' : ''}
 });
 `,
   );
@@ -220,10 +225,11 @@ export default defineConfig({
     ) + '\n',
   );
   write(join(dir, '.gitignore'), 'node_modules\ndist\n.astro\n');
+  if (site.tailwind) write(join(dir, 'src', 'styles', 'global.css'), site.tailwind.input);
 
   write(
     join(dir, 'src', 'layouts', 'Layout.astro'),
-    `---
+    `---${site.tailwind ? "\nimport '../styles/global.css';" : ''}
 interface Props {
   title: string;
   description?: string;
