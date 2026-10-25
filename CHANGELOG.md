@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `--styling tailwind` (CLI, interactive prompt, MCP `styling`): Tailwind CSS v4 utilities wherever they render identically, the rest stays layered CSS. Each class is compiled and checked, and the cascade is simulated per element before and after. Sites built with Tailwind v4 keep their own classes. Next.js and Astro projects get the Tailwind setup. See docs/tailwind.md.
+- Fix: Astro components didn't import icons referenced from data lists (`Icon7 is not defined` at build).
+- Fix: Next.js type check failed on legacy HTML attributes React's types don't list (`<img border="0">`).
 - Published on npm as `@manishtamang/dittu` (the unscoped name was rejected). The command is still `dittu`: `npx @manishtamang/dittu clone <url>`.
 - Interactive mode: `dittu`, `dittu <url>` and `dittu clone [url]` show a dotted DITTU banner and ask for frameworks, pages, verification, output folder and advanced settings (skipped for flags you pass, with `-y`, in CI, or without a terminal).
 - Fix: flags after `clone` were captured by the root command (`-o` was ignored).
