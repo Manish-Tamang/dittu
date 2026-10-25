@@ -10,6 +10,21 @@ import { motionJson } from './markup.js';
 import { projectReadme } from './readme.js';
 import { destructure, propsInterface, reactTypesFor } from './types.js';
 
+/** HTML attributes missing from React's HTMLAttributes typings (checked against @types/react 19). */
+const LEGACY_ATTRIBUTES = [
+  'background',
+  'bgColor',
+  'border',
+  'clear',
+  'compact',
+  'face',
+  'hSpace',
+  'noShade',
+  'noWrap',
+  'vAlign',
+  'vSpace',
+];
+
 const componentFile = (dir: string, def: ComponentDef) => join(dir, 'components', def.scope, `${def.name}.tsx`);
 
 /** Imports + data constants for a module, once its JSX has been generated (which fills `ctx`). */
@@ -99,6 +114,9 @@ export async function exportNext(site: SiteModel, recon: Reconstruction, outDir:
         scripts: { dev: 'next dev', build: 'next build', start: 'next start' },
         dependencies: { next: VERSIONS.next, react: VERSIONS.react, 'react-dom': VERSIONS.react },
         devDependencies: {
+          ...(site.tailwind
+            ? { tailwindcss: VERSIONS.tailwind, '@tailwindcss/postcss': VERSIONS.tailwind, postcss: VERSIONS.postcss }
+            : {}),
           typescript: VERSIONS.typescript,
           '@types/react': VERSIONS.typesReact,
           '@types/react-dom': VERSIONS.typesReact,
@@ -150,12 +168,28 @@ export default nextConfig;
     ) + '\n',
   );
   write(join(dir, '.gitignore'), 'node_modules\n.next\nout\nnext-env.d.ts\n*.tsbuildinfo\n');
+  if (site.tailwind) {
+    write(join(dir, 'postcss.config.mjs'), `export default {\n  plugins: { "@tailwindcss/postcss": {} },\n};\n`);
+    write(join(dir, 'app', 'globals.css'), site.tailwind.input);
+  }
   write(
     join(dir, 'lib', 'css.ts'),
     `import type { CSSProperties } from "react";
 
 /** Style object with CSS custom properties (React's types don't list \`--*\` keys). */
 export const css = (style: Record<string, string | number>) => style as CSSProperties;
+`,
+  );
+  // Legacy presentational attributes React renders but its types don't list (`<img border="0">`).
+  write(
+    join(dir, 'types', 'legacy-attributes.d.ts'),
+    `import "react";
+
+declare module "react" {
+  interface HTMLAttributes<T> {
+${LEGACY_ATTRIBUTES.map((a) => `    ${a}?: string | number | boolean;`).join('\n')}
+  }
+}
 `,
   );
   const custom = customElements([...recon.pages.map((p) => p.root), ...recon.components.map((c) => c.root)]);
@@ -179,7 +213,7 @@ ${custom.map((t) => `      "${t}": CustomElement;`).join('\n')}
 
   write(
     join(dir, 'app', 'layout.tsx'),
-    await fmt(`import type { ReactNode } from "react";
+    await fmt(`import type { ReactNode } from "react";${site.tailwind ? '\nimport "./globals.css";' : ''}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
