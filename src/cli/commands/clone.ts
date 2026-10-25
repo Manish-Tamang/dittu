@@ -1,7 +1,7 @@
 import { relative, resolve } from 'node:path';
 import { Option, type Command } from 'commander';
 import { DEFAULTS, defaultOutDir } from '../../config/defaults.js';
-import type { Framework } from '../../domain/report.js';
+import type { Framework, Styling } from '../../domain/report.js';
 import { cloneAndVerify } from '../../pipeline/run.js';
 import { log } from '../../util/log.js';
 import { banner } from '../banner.js';
@@ -14,6 +14,7 @@ const vp = (v: { width: number; height: number }) => `${v.width}x${v.height}`;
 /** Commander option name → interactive answer key. */
 const FLAG_KEYS: [string, keyof CloneAnswers][] = [
   ['framework', 'frameworks'],
+  ['styling', 'styling'],
   ['pages', 'pages'],
   ['verify', 'verify'],
   ['build', 'build'],
@@ -27,6 +28,7 @@ const FLAG_KEYS: [string, keyof CloneAnswers][] = [
 interface CloneFlags {
   out?: string;
   framework: string;
+  styling: string;
   pages: string;
   viewport: string;
   mobile: string | false;
@@ -44,6 +46,7 @@ interface CloneFlags {
 const CLONE_OPTIONS: [flags: string, description: string, defaultValue?: string][] = [
   ['-o, --out <dir>', 'output directory (default: ./dittu-out/<host>)'],
   ['-f, --framework <list>', 'next, astro, or none', DEFAULTS.frameworks.join(',')],
+  ['-s, --styling <mode>', 'css (original stylesheet) or tailwind (utility classes where lossless)', DEFAULTS.styling],
   ['-p, --pages <n>', 'crawl up to n same-site pages', '1'],
   ['--viewport <WxH>', 'capture viewport', vp(DEFAULTS.viewport)],
   ['--mobile <WxH>', 'second render to capture JS-computed mobile layout', vp(DEFAULTS.mobile)],
@@ -68,6 +71,11 @@ function addCloneOptions(cmd: Command, hidden = false): Command {
   return cmd;
 }
 
+function parseStyling(v: string): Styling {
+  if (v === 'css' || v === 'tailwind') return v;
+  throw new Error(`Invalid --styling "${v}", expected css or tailwind`);
+}
+
 /** Shared by `dittu clone [url]`, `dittu [url]` and bare `dittu`. */
 async function runClone(rawUrl: string | undefined, o: CloneFlags, cmd: Command) {
   const interactive = canPrompt() && !o.yes;
@@ -79,6 +87,7 @@ async function runClone(rawUrl: string | undefined, o: CloneFlags, cmd: Command)
     url: rawUrl ? withScheme(rawUrl) : undefined,
     out: o.out,
     frameworks: list(o.framework).filter((f): f is Framework => f === 'next' || f === 'astro'),
+    styling: parseStyling(o.styling),
     pages: Math.max(1, Number(o.pages)),
     verify: o.verify,
     build: Boolean(o.build),
@@ -111,6 +120,7 @@ async function runClone(rawUrl: string | undefined, o: CloneFlags, cmd: Command)
     waitMs: a.waitMs,
     split: o.split,
     format: o.format,
+    styling: a.styling,
     verify: a.verify,
     build: a.build,
     widths: list(o.widths).map(Number),
