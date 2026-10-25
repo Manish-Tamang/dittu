@@ -12,6 +12,12 @@ export const cloneInput = z.object({
   url: z.string().describe('Page to clone, e.g. https://example.com'),
   outDir: z.string().optional().describe('Output directory (default ./dittu-out/<host>)'),
   frameworks: frameworks.optional().describe('Projects to generate (default next + astro)'),
+  styling: z
+    .enum(['css', 'tailwind'])
+    .optional()
+    .describe(
+      'css keeps the original stylesheet (default); tailwind converts class rules to Tailwind utilities wherever that renders identically and keeps the rest as CSS',
+    ),
   pages: z.number().int().min(1).max(50).optional().describe('Crawl up to n same-site pages (default 1)'),
   verify: z.boolean().optional().describe('Score the clone against the original (default true)'),
   build: z.boolean().optional().describe('Also npm install + build + score the generated apps (slow, default false)'),
@@ -67,6 +73,7 @@ export async function cloneTool(input: z.infer<typeof cloneInput>) {
     waitMs: input.waitMs ?? DEFAULTS.waitMs,
     split: true,
     format: true,
+    styling: input.styling ?? DEFAULTS.styling,
     verify: input.verify ?? true,
     build: input.build ?? false,
     widths: [...DEFAULTS.verifyWidths],
