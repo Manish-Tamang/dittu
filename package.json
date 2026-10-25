@@ -112,7 +112,7 @@
   },
   "lint-staged": {
     "*.{ts,mjs,js,json,md}": "oxfmt --no-error-on-unmatched-pattern",
-    "*.{ts,mjs,js}": "oxlint"
+    "*.{ts,mjs,js}": "oxlint --no-error-on-unmatched-pattern"
   },
   "engines": {
     "node": ">=20.11"
