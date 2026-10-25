@@ -2,6 +2,7 @@ import type { Viewport } from './snapshot.js';
 
 export type Framework = 'next' | 'astro';
 export type Target = 'preview' | Framework;
+export type Styling = 'css' | 'tailwind';
 
 /** dittu.json — written by `clone`, read by `verify` and the MCP server. */
 export interface Manifest {
@@ -9,6 +10,7 @@ export interface Manifest {
   viewport: Viewport;
   pages: { route: string; url: string }[];
   frameworks: Framework[];
+  styling?: Styling;
 }
 
 export interface DiffResult {
