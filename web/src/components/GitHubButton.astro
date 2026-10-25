@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+import { REPO } from '../data';
+import { getStars } from '../lib/stars';
+
+// Star count at build time; the script below refreshes it in the browser.
+const stars = await getStars();
+const compact = (n: number) => new Intl.NumberFormat('en', { notation: 'compact' }).format(n);
+---
+
+<a
+  href={REPO}
+  target="_blank"
+  rel="noreferrer"
+  class="flex h-8 items-center divide-x divide-white/10 rounded-lg border border-white/10 bg-black text-[0.8125rem] font-medium text-white transition-all hover:bg-neutral-900 hover:ring-4 hover:ring-white/5"
+>
+  <span class="flex items-center gap-2 px-3">
+    <Icon name="github" class="size-3.5" />
+    <span class="hidden sm:inline">GitHub</span>
+  </span>
+  <span class:list={['flex items-center gap-1 px-2.5 text-neutral-300', !stars && 'hidden']} data-stars>
+    <Icon name="star" class="size-3 text-amber-400" />
+    <span data-stars-count>{stars ? compact(stars) : ''}</span>
+  </span>
+</a>
+
+<script>
+  import { REPO_API } from '../data';
+
+  const badge = document.querySelector<HTMLElement>('[data-stars]');
+  fetch(REPO_API)
+    .then((res) => (res.ok ? res.json() : Promise.reject()))
+    .then(({ stargazers_count }: { stargazers_count: number }) => {
+      if (!badge) return;
+      badge.querySelector('[data-stars-count]')!.textContent = new Intl.NumberFormat('en', {
+        notation: 'compact',
+      }).format(stargazers_count);
+      badge.classList.remove('hidden');
+    })
+    .catch(() => {});
+</script>
