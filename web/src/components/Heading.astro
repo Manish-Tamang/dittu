@@ -1,0 +1,20 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  color?: string;
+}
+
+const { label, title, color = 'bg-orange-500' } = Astro.props;
+---
+
+<div class="max-w-2xl">
+  <p class="flex items-center gap-2 text-sm text-neutral-400">
+    <span class:list={['size-3.5 rounded-[4px]', color]}></span>
+    {label}
+  </p>
+  <h2 class="mt-3 font-display text-4xl font-medium tracking-tight text-white sm:text-5xl">{title}</h2>
+  <div class="mt-4 text-base/7 text-neutral-400 sm:text-lg/8">
+    <slot />
+  </div>
+</div>
