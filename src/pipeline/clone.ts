@@ -4,7 +4,7 @@ import { launch, newContext } from '../capture/browser.js';
 import { capturePage } from '../capture/capture.js';
 import { CrawlQueue, loadRobots } from '../capture/crawl.js';
 import { NetworkRecorder } from '../capture/network.js';
-import type { Framework, Manifest } from '../domain/report.js';
+import type { Framework, Manifest, Styling } from '../domain/report.js';
 import { routeScope, type PageModel, type SiteModel } from '../domain/site.js';
 import type { CaptureResult, MotionItem, ResponsiveItem, Viewport } from '../domain/snapshot.js';
 import { exportAstro } from '../export/astro.js';
@@ -16,6 +16,7 @@ import { reconstructSite } from '../reconstruct/index.js';
 import { buildCss } from '../transform/css.js';
 import { cleanupAttributes, collectTokens, pruneCss } from '../transform/prune.js';
 import { localIcons, transformBody } from '../transform/html.js';
+import { tailwindSite } from '../transform/tailwind/index.js';
 import { hash } from '../util/hash.js';
 import { log } from '../util/log.js';
 import { bridgePath } from '../util/paths.js';
@@ -36,6 +37,8 @@ export interface CloneOptions {
   /** Extract components (icons, repeated structures, sections); false = one component per page. */
   split: boolean;
   format: boolean;
+  /** Keep the original CSS, or convert class rules to Tailwind utilities where lossless. */
+  styling: Styling;
 }
 
 export interface CloneResult {
@@ -164,7 +167,7 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
     };
 
     const pages: PageModel[] = [];
-    const cssFiles = new Map<string, string>();
+    const pageCss: string[] = [];
     for (const { url, route, cap } of captured) {
       const s = cap.snapshot;
       const body = await transformBody(cap, store, resolveLink);
@@ -178,19 +181,13 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
       log.info(
         `${route}: dropped ${pruned.removedRules.toLocaleString()} unused CSS rules (${kb(fullCss)} → ${kb(pruned.css)}), ${removedAttrs.toLocaleString()} unused data-* attributes`,
       );
-      const css = opts.format ? await formatCode(pruned.css, 'css') : pruned.css;
-      const cssHash = hash(css);
-      let cssPath = cssFiles.get(cssHash);
-      if (!cssPath) {
-        cssPath = store.writeFile('css', `${routeScope(route)}-${cssHash}.css`, css);
-        cssFiles.set(cssHash, cssPath);
-      }
       const motion: MotionItem[] = [
         ...s.motion,
         ...s.responsive
           .filter((r) => r.add.length || r.remove.length)
           .map((r): MotionItem => ({ id: r.id, type: 'resp', mq, add: r.add, remove: r.remove })),
       ];
+      pageCss.push(pruned.css);
       pages.push({
         route,
         url,
@@ -200,17 +197,49 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
         htmlAttrs: s.htmlAttrs,
         bodyAttrs: s.bodyAttrs,
         body,
-        css: cssPath,
+        css: '',
         motion,
         warnings: s.warnings,
       });
+    }
+
+    let tailwind: Awaited<ReturnType<typeof tailwindSite>> | undefined;
+    if (opts.styling === 'tailwind') {
+      log.step('Converting styles to Tailwind');
+      tailwind = await tailwindSite(pages.map((p, i) => ({ ...p, css: pageCss[i] })));
+      tailwind.pages.forEach((t, i) => {
+        Object.assign(pages[i], { htmlAttrs: t.htmlAttrs, bodyAttrs: t.bodyAttrs, motion: t.motion });
+        pageCss[i] = t.css;
+      });
+    }
+
+    const cssFiles = new Map<string, string>();
+    const writeCss = async (name: string, text: string) => {
+      const css = opts.format ? await formatCode(text, 'css') : text;
+      const cssHash = hash(css);
+      let path = cssFiles.get(cssHash);
+      if (!path) {
+        path = store.writeFile('css', `${name}-${cssHash}.css`, css);
+        cssFiles.set(cssHash, path);
+      }
+      return path;
+    };
+    for (const [i, page] of pages.entries()) page.css = await writeCss(routeScope(page.route), pageCss[i]);
+    if (tailwind) {
+      const path = await writeCss('tailwind', tailwind.previewCss);
+      for (const page of pages) page.tailwindCss = path;
     }
     mkdirSync(join(outDir, 'assets'), { recursive: true });
     copyFileSync(bridgePath('runtime/motion.js'), join(outDir, 'assets', 'dittu-motion.js'));
     if (store.failed.length) log.warn(`${store.failed.length} assets could not be downloaded (kept as remote URLs)`);
     log.info(`${(store.bytes / 1024 / 1024).toFixed(1)} MB of assets`);
 
-    const site: SiteModel = { startUrl: opts.url, origin: crawl.origin, pages };
+    const site: SiteModel = {
+      startUrl: opts.url,
+      origin: crawl.origin,
+      pages,
+      ...(tailwind ? { tailwind: { input: tailwind.input } } : {}),
+    };
 
     // ------------------------------------------------------------- export
     const outputs: CloneResult['outputs'] = { preview: exportStatic(site, outDir) };
@@ -238,6 +267,7 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
       viewport: opts.viewport,
       pages: pages.map((p) => ({ route: p.route, url: p.url })),
       frameworks: opts.frameworks,
+      styling: opts.styling,
     };
     const warnings = Object.fromEntries(pages.map((p) => [p.route, p.warnings]));
     writeFileSync(
