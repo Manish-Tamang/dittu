@@ -16,6 +16,7 @@ banner and ask for what you didn't pass as flags:
 ◆  Export to which frameworks?
 │  ◼ Next.js (App Router, React components (JSX))
 │  ◼ Astro (.astro components, zero JS by default)
+◆  How should styles be written?  original CSS / Tailwind CSS
 ◆  How much of the site?          just this page / 5 / 10 / custom
 ◆  Check the clone against the original?   quick / build the apps too / skip
 ◆  Where should I save it?
@@ -38,6 +39,7 @@ Capture, transform, export, then verify. `dittu <url>` is the same command.
 | -------------------------------- | ------------------ | ---------------------------------------------------- |
 | `-o, --out <dir>`                | `dittu-out/<host>` | output directory                                     |
 | `-f, --framework <list>`         | `next,astro`       | `next`, `astro`, or `none`                           |
+| `-s, --styling <mode>`           | `css`              | `css` or `tailwind` ([Tailwind output](tailwind.md)) |
 | `-p, --pages <n>`                | `1`                | crawl up to n same-site pages (robots.txt respected) |
 | `--viewport <WxH>`               | `1440x900`         | capture viewport                                     |
 | `--mobile <WxH>` / `--no-mobile` | `390x844`          | second render for JS-computed mobile layout          |
