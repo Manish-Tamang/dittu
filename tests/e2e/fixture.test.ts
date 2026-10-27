@@ -4,6 +4,8 @@ import type { Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { Element } from 'hast';
+import { visit } from 'unist-util-visit';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { cloneAndVerify } from '../../src/pipeline/run.js';
 import { runDoctor } from '../../src/pipeline/doctor.js';
@@ -42,8 +44,15 @@ describe.skipIf(!chromiumOk)('fixture clone', () => {
       widths: [1440, 390],
     });
     expect(clone.manifest.pages.map((p) => p.route)).toEqual(['/', '/about']);
-    // every recorded reveal survived (2 class toggles, 1 WAAPI, 1 bottom section)
-    expect(clone.site.pages[0].motion.filter((m) => m.type !== 'resp')).toHaveLength(4);
+    // every recorded reveal survived (2 class toggles, 1 WAAPI, 1 bottom section);
+    // the 3 identical class toggles share one motion entry
+    const page = clone.site.pages[0];
+    expect(page.motion.filter((m) => m.type !== 'resp')).toHaveLength(2);
+    const animated: unknown[] = [];
+    visit(page.body, 'element', (n: Element) => {
+      if (n.properties?.dataDittuM !== undefined) animated.push(n.properties.dataDittuM);
+    });
+    expect(animated).toHaveLength(4);
     expect(report!.results).toHaveLength(4);
     for (const r of report!.results) expect(r.diff.score, `${r.route} @${r.width}`).toBeGreaterThan(0.99);
   }, 240_000);
