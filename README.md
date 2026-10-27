@@ -25,6 +25,8 @@ One CLI, one MCP server, and skills for your coding agent.
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-server-000000?style=flat-square&logo=modelcontextprotocol&logoColor=white)
 
+<a href="https://glama.ai/mcp/servers/Manish-Tamang/dittu"><img width="380" src="https://glama.ai/mcp/servers/Manish-Tamang/dittu/badge" alt="dittu MCP server on Glama" /></a>
+
 [Quick start](#quick-start) · [How it works](#how-dittu-works) · [Benchmarks](#benchmarks) · [Docs](#documentation)
 
 </div>
