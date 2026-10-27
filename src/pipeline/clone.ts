@@ -2,7 +2,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync
 import { join } from 'node:path';
 import { launch, newContext } from '../capture/browser.js';
 import { capturePage } from '../capture/capture.js';
-import { CrawlQueue, loadRobots } from '../capture/crawl.js';
+import { CrawlQueue, crawlScope, loadRobots } from '../capture/crawl.js';
 import { NetworkRecorder } from '../capture/network.js';
 import type { Framework, Manifest, Styling } from '../domain/report.js';
 import { routeScope, type PageModel, type SiteModel } from '../domain/site.js';
@@ -118,7 +118,7 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
   try {
     // ------------------------------------------------------------ capture
     const captured: CapturedPage[] = [];
-    const crawl = new CrawlQueue(start, new URL(start).origin);
+    const crawl = new CrawlQueue(start, new URL(start).origin, crawlScope(opts.url));
     const usedRoutes = new Set<string>();
 
     for (let url = crawl.next(); url && captured.length < opts.pages; url = crawl.next()) {
