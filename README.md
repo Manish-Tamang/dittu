@@ -12,13 +12,13 @@ One CLI, one MCP server, and skills for your coding agent.
 </div>
 
 ```
-$ dittu clone https://dub.co/home --build
+$ dittu clone https://gole.codes --build
 
-› Capturing https://dub.co/home
+› Capturing https://gole.codes
   1,680,755 chars of markup, 6 stylesheets, 33 animations, 13 JS-responsive elements
-✓ Static preview → dittu-out/dub.co/preview
-✓ Next.js project → dittu-out/dub.co/next
-✓ Astro project → dittu-out/dub.co/astro
+✓ Static preview → dittu-out/gole.codes/preview
+✓ Next.js project → dittu-out/gole.codes/next
+✓ Astro project → dittu-out/gole.codes/astro
 
 Visual match (1 − differing pixels / total)
   preview  /home    1440px   99.95%
@@ -45,7 +45,7 @@ with `npx @manishtamang/dittu doctor` (on Linux/WSL you may need
 
 ### Ask your agent
 
-> Clone https://example.com into Next.js and make the pricing cards a reusable component.
+> Clone https://gole.codes into Next.js and make the pricing cards a reusable component.
 
 The agent calls `clone_website`, reads the scores, refactors the generated
 components, and calls `verify_clone` to prove nothing visual changed.
@@ -54,11 +54,11 @@ components, and calls `verify_clone` to prove nothing visual changed.
 
 ```bash
 npx @manishtamang/dittu                                        # interactive: banner, then pick URL, frameworks, pages…
-npx @manishtamang/dittu clone https://example.com -y           # no questions: preview + Next.js + Astro, scored
-npx @manishtamang/dittu clone https://example.com -p 5 --build # crawl 5 pages, build and score the apps
-npx @manishtamang/dittu clone https://example.com -s tailwind # Tailwind classes where lossless, rest stays CSS
-npx @manishtamang/dittu verify dittu-out/example.com --targets next
-npx @manishtamang/dittu serve dittu-out/example.com
+npx @manishtamang/dittu clone https://gole.codes -y           # no questions: preview + Next.js + Astro, scored
+npx @manishtamang/dittu clone https://gole.codes -p 5 --build # crawl 5 pages, build and score the apps
+npx @manishtamang/dittu clone https://gole.codes -s tailwind # Tailwind classes where lossless, rest stays CSS
+npx @manishtamang/dittu verify dittu-out/gole.codes --targets next
+npx @manishtamang/dittu serve dittu-out/gole.codes
 ```
 
 ### Update dittu
@@ -108,7 +108,7 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 | Site                       | Stack                    | Desktop      | Mobile     | Built apps            |
 | -------------------------- | ------------------------ | ------------ | ---------- | --------------------- |
-| dub.co/home                | Next.js, heavy animation | 99.95%       | 99.89%     | Next.js + Astro: same |
+| gole.codes                 | Next.js, heavy animation | 99.95%       | 99.89%     | Next.js + Astro: same |
 | nextjs.org                 | Next.js                  | 99.79%       | 99.99%     | 99.78–99.79%          |
 | ui.shadcn.com              | Next.js + Tailwind       | 100.00%      | 100.00%    | 100.00%               |
 | astro.build                | Astro                    | 100.00%      | 100.00%    |                       |

@@ -5,7 +5,7 @@ import { banner } from './banner.js';
 import { summary, type CloneAnswers } from './interactive.js';
 
 const base: CloneAnswers = {
-  url: 'https://example.com/',
+  url: 'https://gole.codes/',
   frameworks: ['next', 'astro'],
   styling: 'css',
   pages: 1,
@@ -33,7 +33,7 @@ describe('summary', () => {
     expect(s).toContain('Next.js + Astro + preview');
     expect(s).toContain('this page');
     expect(s).toContain('original CSS');
-    expect(s).toContain('dittu-out/example.com');
+    expect(s).toContain('dittu-out/gole.codes');
     expect(s).not.toContain('Breakpoint');
   });
   it('shows non-default advanced settings', () => {

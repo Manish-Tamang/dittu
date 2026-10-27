@@ -72,7 +72,7 @@ export const support: { site: string; level: Support; note: string }[] = [
 ];
 
 export const benchmarks = [
-  { site: 'dub.co/home', stack: 'Next.js, heavy animation', desktop: '99.95%', mobile: '99.89%', built: 'Same' },
+  { site: 'gole.codes', stack: 'Next.js, heavy animation', desktop: '99.95%', mobile: '99.89%', built: 'Same' },
   { site: 'nextjs.org', stack: 'Next.js', desktop: '99.79%', mobile: '99.99%', built: '99.78–99.79%' },
   { site: 'ui.shadcn.com', stack: 'Next.js + Tailwind', desktop: '100.00%', mobile: '100.00%', built: '100.00%' },
   { site: 'astro.build', stack: 'Astro', desktop: '100.00%', mobile: '100.00%', built: '—' },

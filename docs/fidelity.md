@@ -29,7 +29,7 @@ generated apps after `npm install && build`, served and screenshotted.
 | ---------------------------- | ----------------------------- | ------------ | ------------ | --------------------- |
 | hard-cases fixture (2 pages) | hand-written, every edge case | 99.99%       | 99.91–99.98% | same as preview       |
 | manishtamang.com (3 pages)   | Next.js                       | 99.89–99.99% | 99.80–100%   | same as preview       |
-| dub.co/home                  | Next.js, heavy animation      | 99.95%       | 99.89%       | same as preview       |
+| gole.codes                   | Next.js, heavy animation      | 99.95%       | 99.89%       | same as preview       |
 | nextjs.org                   | Next.js                       | 99.79%       | 99.99%       | 99.78–99.79% / 99.99% |
 | ui.shadcn.com                | Next.js + Tailwind            | 100.00%      | 100.00%      | 100.00%               |
 | astro.build                  | Astro                         | 100.00%      | 100.00%      |                       |

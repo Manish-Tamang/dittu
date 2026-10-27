@@ -9,7 +9,7 @@ import { verify } from '../verify/verify.js';
 const frameworks = z.array(z.enum(['next', 'astro']));
 
 export const cloneInput = z.object({
-  url: z.string().describe('Page to clone, e.g. https://example.com'),
+  url: z.string().describe('Page to clone, e.g. https://gole.codes'),
   outDir: z.string().optional().describe('Output directory (default ./dittu-out/<host>)'),
   frameworks: frameworks.optional().describe('Projects to generate (default next + astro)'),
   styling: z

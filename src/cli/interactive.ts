@@ -34,7 +34,7 @@ function answer<T>(value: T): Exclude<T, symbol> {
 }
 
 const validUrl = (v: string | undefined) => {
-  if (!v?.trim()) return 'Enter a URL, e.g. https://example.com';
+  if (!v?.trim()) return 'Enter a URL, e.g. https://gole.codes';
   try {
     const u = new URL(withScheme(v.trim()));
     if (!u.hostname.includes('.') && u.hostname !== 'localhost') return 'That doesn’t look like a website address';
@@ -59,7 +59,7 @@ export async function promptClone(current: CloneAnswers, explicit: Explicit): Pr
         answer(
           await p.text({
             message: 'Which website should I clone?',
-            placeholder: 'https://example.com',
+            placeholder: 'https://gole.codes',
             validate: validUrl,
           }),
         ).trim(),

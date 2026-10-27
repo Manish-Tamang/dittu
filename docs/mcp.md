@@ -40,9 +40,9 @@ Returns (`structuredContent`):
 
 ```jsonc
 {
-  "outDir": "/abs/dittu-out/example.com",
+  "outDir": "/abs/dittu-out/gole.codes",
   "outputs": { "preview": "…/preview", "next": "…/next", "astro": "…/astro" },
-  "pages": [{ "route": "/", "url": "https://example.com/" }],
+  "pages": [{ "route": "/", "url": "https://gole.codes/" }],
   "scores": [{ "target": "preview", "route": "/", "width": 1440, "score": 99.89, "worstBandsY": [], "diffImage": "…" }],
   "lowest": 99.89,
   "passed": true, // lowest ≥ 95

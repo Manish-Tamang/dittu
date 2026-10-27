@@ -5,7 +5,7 @@ that renders exactly like the original, and keeps the rest as CSS. The score is
 the same as with the original stylesheet (99%+ on the fixture and real sites).
 
 ```bash
-npx @manishtamang/dittu clone https://example.com --styling tailwind
+npx @manishtamang/dittu clone https://gole.codes --styling tailwind
 ```
 
 The default is `--styling css`: the site's own stylesheet, untouched.
