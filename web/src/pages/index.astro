@@ -15,6 +15,7 @@ import GeminiCli from '../assets/logos/geminicli.svg';
 import Codex from '../assets/logos/codex.svg';
 import { REPO, SITE, benchmarks, faq, steps, support } from '../data';
 import { faqSchema, softwareSchema } from '../lib/seo';
+import { getRelease } from '../lib/release';
 
 const agents = [
   { name: 'Claude Code', Logo: ClaudeCode },
@@ -22,6 +23,8 @@ const agents = [
   { name: 'Gemini CLI', Logo: GeminiCli },
   { name: 'Codex', Logo: Codex },
 ];
+
+const release = await getRelease();
 
 const levels = {
   yes: { icon: 'check', class: 'bg-emerald-500/10 text-emerald-400' },
@@ -50,12 +53,12 @@ const terminal = [
       <div class="bg-grid pointer-events-none absolute inset-0"></div>
       <div class="relative mx-auto max-w-[1080px] border-x border-white/10 px-5 pb-16 pt-20 text-center sm:px-10 sm:pt-28">
         <a
-          href={`${REPO}/releases/tag/v0.1.0`}
+          href={release.url}
           target="_blank"
           rel="noreferrer"
           class="mx-auto flex w-fit items-center divide-x divide-white/10 rounded-full border border-white/10 bg-black text-xs transition-colors hover:border-white/20 sm:text-sm"
         >
-          <span class="px-3 py-1.5 text-neutral-200">dittu v0.1.0 is out</span>
+          <span class="px-3 py-1.5 text-neutral-200">dittu v{release.version} is out</span>
           <span class="flex items-center gap-1 px-3 py-1.5 text-neutral-500">
             Release notes <Icon name="arrow" class="size-3" />
           </span>
