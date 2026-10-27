@@ -7,6 +7,24 @@
 Layout, CSS, fonts, images and scroll animations. Not the backend.
 One CLI, one MCP server, and skills for your coding agent.
 
+[![npm version](https://img.shields.io/npm/v/@manishtamang/dittu?style=flat-square&color=cb3837&logo=npm)](https://www.npmjs.com/package/@manishtamang/dittu)
+[![npm downloads](https://img.shields.io/npm/dm/@manishtamang/dittu?style=flat-square&color=cb3837)](https://www.npmjs.com/package/@manishtamang/dittu)
+[![CI](https://img.shields.io/github/actions/workflow/status/Manish-Tamang/dittu/ci.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI)](https://github.com/Manish-Tamang/dittu/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/Manish-Tamang/dittu?style=flat-square&color=blue)](LICENSE)
+[![Node](https://img.shields.io/node/v/@manishtamang/dittu?style=flat-square&logo=nodedotjs&logoColor=white&color=5fa04e)](https://nodejs.org)
+
+[![GitHub stars](https://img.shields.io/github/stars/Manish-Tamang/dittu?style=flat-square&logo=github)](https://github.com/Manish-Tamang/dittu/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Manish-Tamang/dittu?style=flat-square&logo=github)](https://github.com/Manish-Tamang/dittu/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/Manish-Tamang/dittu?style=flat-square&logo=github)](https://github.com/Manish-Tamang/dittu/issues)
+[![Last commit](https://img.shields.io/github/last-commit/Manish-Tamang/dittu?style=flat-square&logo=git&logoColor=white)](https://github.com/Manish-Tamang/dittu/commits/main)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![Astro](https://img.shields.io/badge/Astro-BC52EE?style=flat-square&logo=astro&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-server-000000?style=flat-square&logo=modelcontextprotocol&logoColor=white)
+
 [Quick start](#quick-start) · [How it works](#how-dittu-works) · [Benchmarks](#benchmarks) · [Docs](#documentation)
 
 </div>
