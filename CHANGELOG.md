@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-10-29)
 
+- `--pages` crawls stay inside the start URL's folder (like `wget --no-parent`): cloning `/au/` only follows links under `/au/`. Starting from `/` still crawls the whole site.
+- robots.txt: `*` wildcards and `$` end anchors are supported (RFC 9309); on equal-length matches, Allow wins.
 - Fix: Next.js type check failed on numeric ARIA attributes (`aria-valuenow="0"`); they are now emitted as numbers (`aria-valuenow={0}`).
 
 ## 0.2.0 (2026-10-25)

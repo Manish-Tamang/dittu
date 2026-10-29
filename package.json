@@ -1,6 +1,6 @@
 {
   "name": "@manishtamang/dittu",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Clone any website's frontend (layout, CSS, fonts, images, animations) into Next.js or Astro, verified by pixel diff. CLI + MCP server + agent skills.",
   "keywords": [
     "agent-skills",

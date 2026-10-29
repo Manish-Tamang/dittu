@@ -24,17 +24,17 @@ several minutes with `build: true`. If your client has a tool timeout, raise it
 
 Clone a page (or crawl a site) and score the result.
 
-| Input        | Type                    | Default              |                                                   |
-| ------------ | ----------------------- | -------------------- | ------------------------------------------------- |
-| `url`        | string                  | required             | scheme optional                                   |
-| `outDir`     | string                  | `./dittu-out/<host>` |                                                   |
-| `frameworks` | `("next" \| "astro")[]` | both                 | projects to generate                              |
-| `styling`    | `"css" \| "tailwind"`   | `"css"`              | Tailwind utilities where lossless, rest stays CSS |
-| `pages`      | int 1–50                | 1                    | same-site crawl (robots.txt respected)            |
-| `verify`     | boolean                 | true                 | score preview vs original                         |
-| `build`      | boolean                 | false                | also `npm install` + build + score generated apps |
-| `remove`     | string[]                |                      | CSS selectors to drop                             |
-| `waitMs`     | int                     | 1500                 | extra wait after load                             |
+| Input        | Type                    | Default              |                                                                     |
+| ------------ | ----------------------- | -------------------- | ------------------------------------------------------------------- |
+| `url`        | string                  | required             | scheme optional                                                     |
+| `outDir`     | string                  | `./dittu-out/<host>` |                                                                     |
+| `frameworks` | `("next" \| "astro")[]` | both                 | projects to generate                                                |
+| `styling`    | `"css" \| "tailwind"`   | `"css"`              | Tailwind utilities where lossless, rest stays CSS                   |
+| `pages`      | int 1–50                | 1                    | same-site crawl under the start URL's folder (robots.txt respected) |
+| `verify`     | boolean                 | true                 | score preview vs original                                           |
+| `build`      | boolean                 | false                | also `npm install` + build + score generated apps                   |
+| `remove`     | string[]                |                      | CSS selectors to drop                                               |
+| `waitMs`     | int                     | 1500                 | extra wait after load                                               |
 
 Returns (`structuredContent`):
 

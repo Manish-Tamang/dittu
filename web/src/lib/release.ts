@@ -1,7 +1,7 @@
 import { REPO, REPO_API } from '../data';
 
 /** Shown when GitHub can't be reached (keep in step with the latest release). */
-const FALLBACK = { version: '0.2.0', url: `${REPO}/releases/tag/v0.2.0` };
+const FALLBACK = { version: '0.3.0', url: `${REPO}/releases/tag/v0.3.0` };
 
 const TTL = 10 * 60_000;
 let cached: { at: number; release: Promise<typeof FALLBACK> } | undefined;

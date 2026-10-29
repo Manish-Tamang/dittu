@@ -35,23 +35,23 @@ Re-cloning into an existing folder replaces the previous results
 
 Capture, transform, export, then verify. `dittu <url>` is the same command.
 
-| Option                           | Default            |                                                      |
-| -------------------------------- | ------------------ | ---------------------------------------------------- |
-| `-o, --out <dir>`                | `dittu-out/<host>` | output directory                                     |
-| `-f, --framework <list>`         | `next,astro`       | `next`, `astro`, or `none`                           |
-| `-s, --styling <mode>`           | `css`              | `css` or `tailwind` ([Tailwind output](tailwind.md)) |
-| `-p, --pages <n>`                | `1`                | crawl up to n same-site pages (robots.txt respected) |
-| `--viewport <WxH>`               | `1440x900`         | capture viewport                                     |
-| `--mobile <WxH>` / `--no-mobile` | `390x844`          | second render for JS-computed mobile layout          |
-| `--breakpoint <px>`              | `768`              | width below which mobile layout applies              |
-| `--widths <list>`                | `1440,390`         | widths to verify                                     |
-| `--build`                        | off                | install + build + score the generated apps           |
-| `--remove <selectors…>`          |                    | drop elements (cookie banners, chat widgets)         |
-| `--wait <ms>`                    | `1500`             | extra wait after load                                |
-| `--no-split`                     |                    | one component per page                               |
-| `--no-format`                    |                    | skip prettier                                        |
-| `--no-verify`                    |                    | skip scoring                                         |
-| `-y, --yes`                      |                    | no questions: flags and defaults only                |
+| Option                           | Default            |                                                                                   |
+| -------------------------------- | ------------------ | --------------------------------------------------------------------------------- |
+| `-o, --out <dir>`                | `dittu-out/<host>` | output directory                                                                  |
+| `-f, --framework <list>`         | `next,astro`       | `next`, `astro`, or `none`                                                        |
+| `-s, --styling <mode>`           | `css`              | `css` or `tailwind` ([Tailwind output](tailwind.md))                              |
+| `-p, --pages <n>`                | `1`                | crawl up to n same-site pages under the start URL's folder (robots.txt respected) |
+| `--viewport <WxH>`               | `1440x900`         | capture viewport                                                                  |
+| `--mobile <WxH>` / `--no-mobile` | `390x844`          | second render for JS-computed mobile layout                                       |
+| `--breakpoint <px>`              | `768`              | width below which mobile layout applies                                           |
+| `--widths <list>`                | `1440,390`         | widths to verify                                                                  |
+| `--build`                        | off                | install + build + score the generated apps                                        |
+| `--remove <selectors…>`          |                    | drop elements (cookie banners, chat widgets)                                      |
+| `--wait <ms>`                    | `1500`             | extra wait after load                                                             |
+| `--no-split`                     |                    | one component per page                                                            |
+| `--no-format`                    |                    | skip prettier                                                                     |
+| `--no-verify`                    |                    | skip scoring                                                                      |
+| `-y, --yes`                      |                    | no questions: flags and defaults only                                             |
 
 ## `verify <dir>`
 
