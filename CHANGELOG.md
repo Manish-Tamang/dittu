@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: Next.js type check failed on numeric ARIA attributes (`aria-valuenow="0"`); they are now emitted as numbers (`aria-valuenow={0}`).
+
 ## 0.2.0 (2026-10-25)
 
 - `--styling tailwind` (CLI, interactive prompt, MCP `styling`): Tailwind CSS v4 utilities wherever they render identically, the rest stays layered CSS. Each class is compiled and checked, and the cascade is simulated per element before and after. Sites built with Tailwind v4 keep their own classes. Next.js and Astro projects get the Tailwind setup. See docs/tailwind.md.

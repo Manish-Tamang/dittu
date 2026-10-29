@@ -64,6 +64,15 @@ describe('toJsx', () => {
     expect(code).toContain('defaultChecked');
   });
 
+  it('emits numeric ARIA attributes as numbers', () => {
+    const code = toJsx(
+      frag('<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="x"></div>'),
+      newJsxContext(new Map()),
+    );
+    expect(code).toContain('aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}');
+    expect(code).toContain('aria-label="x"');
+  });
+
   it('converts root attributes', () => {
     expect(
       jsxAttributes([

@@ -66,6 +66,18 @@ const NUMERIC_PROPS = new Set([
   'high',
   'low',
   'optimum',
+  'aria-valuemin',
+  'aria-valuemax',
+  'aria-valuenow',
+  'aria-level',
+  'aria-posinset',
+  'aria-setsize',
+  'aria-colcount',
+  'aria-colindex',
+  'aria-colspan',
+  'aria-rowcount',
+  'aria-rowindex',
+  'aria-rowspan',
 ]);
 
 const SAFE_TEXT = /^[^\s{}<>&"'`\\]([^{}<>&\n\\]*[^\s{}<>&\\])?$/;
