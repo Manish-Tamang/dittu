@@ -1,9 +1,10 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { launch, newContext } from '../capture/browser.js';
 import { capturePage } from '../capture/capture.js';
 import { CrawlQueue, crawlScope, loadRobots } from '../capture/crawl.js';
 import { NetworkRecorder } from '../capture/network.js';
+import { CaptureSession } from '../capture/session.js';
+import { MAX_CONSECUTIVE_SKIPS } from '../config/defaults.js';
 import type { Framework, Manifest, Styling } from '../domain/report.js';
 import { routeScope, type PageModel, type SiteModel } from '../domain/site.js';
 import type { CaptureResult, MotionItem, ResponsiveItem, Viewport } from '../domain/snapshot.js';
@@ -107,12 +108,8 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
   if (!start) throw new Error(`Invalid URL: ${opts.url}`);
   prepareOutDir(outDir);
 
-  const browser = await launch();
-  const context = await newContext(browser, opts.viewport, { record: true });
   const network = new NetworkRecorder();
-  network.attach(context);
-  const mobileContext = opts.mobile ? await newContext(browser, opts.mobile) : undefined;
-  if (mobileContext) network.attach(mobileContext);
+  const session = await CaptureSession.open(opts.viewport, opts.mobile, (ctx) => network.attach(ctx));
   const mq = `(max-width: ${opts.breakpoint - 0.02}px)`;
 
   try {
@@ -120,30 +117,43 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
     const captured: CapturedPage[] = [];
     const crawl = new CrawlQueue(start, new URL(start).origin, crawlScope(opts.url));
     const usedRoutes = new Set<string>();
+    let skipped = 0;
 
     for (let url = crawl.next(); url && captured.length < opts.pages; url = crawl.next()) {
       log.step(`Capturing ${url}`);
       const route = routeFor(url, usedRoutes);
       const referencePath = join(outDir, 'reference', `${routeScope(route)}@${opts.viewport.width}.png`);
-      let cap: CaptureResult;
-      try {
-        cap = await capturePage(context, url, {
+      const capture = () =>
+        capturePage(session.context, url, {
           waitMs: opts.waitMs,
           remove: opts.remove,
           referencePath,
-          mobileContext,
+          mobileContext: session.mobileContext,
+        });
+      let cap: CaptureResult;
+      try {
+        cap = await capture().catch(async (err) => {
+          // A crashed browser fails every later page too: relaunch and retry once.
+          if (!(await session.recover())) throw err;
+          log.warn(`Browser crashed on ${url}; relaunched it`);
+          return capture();
         });
       } catch (err) {
         if (!captured.length) throw err;
         log.warn(`Skipped ${url}: ${(err as Error).message}`);
+        if (++skipped >= MAX_CONSECUTIVE_SKIPS) {
+          log.warn(`Stopped crawling after ${skipped} pages in a row failed`);
+          break;
+        }
         continue;
       }
+      skipped = 0;
       usedRoutes.add(route);
       const finalUrl = normalizePageUrl(cap.snapshot.url) ?? url;
       if (!captured.length) {
         // follow redirects (apex → www etc.)
         crawl.origin = new URL(cap.snapshot.url).origin;
-        if (opts.pages > 1) crawl.allowed = await loadRobots(context.request, crawl.origin);
+        if (opts.pages > 1) crawl.allowed = await loadRobots(session.context.request, crawl.origin);
       }
       crawl.markSeen(finalUrl);
       captured.push({ url: finalUrl, route, cap });
@@ -155,10 +165,13 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
       crawl.enqueue(cap.links);
     }
     await network.flush();
+    // Downloads below go through the browser's request client: make sure it is alive.
+    await session.recover();
+    const { request } = session.context;
 
     // ---------------------------------------------------------- transform
     log.step('Rewriting markup, styles and assets');
-    const store = new AssetStore(outDir, network, context.request, { fetchUnloaded: true });
+    const store = new AssetStore(outDir, network, request, { fetchUnloaded: true });
     const routeByUrl = new Map(captured.map((c) => [c.url, c.route]));
     const resolveLink = (abs: string) => {
       const n = normalizePageUrl(abs);
@@ -172,7 +185,7 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
       const s = cap.snapshot;
       const body = await transformBody(cap, store, resolveLink);
       const fullCss =
-        (await buildCss(s.sheets, s.baseURI, { network, request: context.request, store, pageUrl: s.url })) +
+        (await buildCss(s.sheets, s.baseURI, { network, request, store, pageUrl: s.url })) +
         responsiveCss(s.responsive, mq);
       // Classes the runtime toggles count as used.
       const toggled = [...s.motion, ...s.responsive].flatMap((m) => ('add' in m ? [...m.add, ...m.remove] : []));
@@ -281,8 +294,6 @@ export async function clone(opts: CloneOptions): Promise<CloneResult> {
     for (const p of pages) for (const w of p.warnings) log.warn(`${p.route}: ${w}`);
     return { site, manifest, outputs, warnings, failedAssets: store.failed, assetBytes: store.bytes };
   } finally {
-    await mobileContext?.close();
-    await context.close();
-    await browser.close();
+    await session.close();
   }
 }

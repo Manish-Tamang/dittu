@@ -34,5 +34,8 @@ export const MAX_SHOT_HEIGHT = 16_000;
 
 export const MAX_ASSET_BYTES = 40 * 1024 * 1024;
 
+/** A crawl stops after this many pages in a row fail to capture. */
+export const MAX_CONSECUTIVE_SKIPS = 10;
+
 /** ./dittu-out/<host> */
 export const defaultOutDir = (url: string) => `dittu-out/${new URL(url).hostname}`;

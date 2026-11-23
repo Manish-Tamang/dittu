@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: when Chromium crashed during a `--pages` crawl, every later page was skipped and the clone failed before writing anything (its asset downloads used the dead browser). dittu now relaunches the browser and retries the page once, and stops crawling after 10 pages in a row fail.
+
 ## 0.3.0 (2026-10-29)
 
 - `--pages` crawls stay inside the start URL's folder (like `wget --no-parent`): cloning `/au/` only follows links under `/au/`. Starting from `/` still crawls the whole site.
