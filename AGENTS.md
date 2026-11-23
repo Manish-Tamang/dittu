@@ -22,7 +22,7 @@ The fixture e2e test needs a launchable Chromium (`dittu doctor`).
 - `src/domain` holds types and pure model helpers (no I/O, no imports outside `domain`).
 - `bridge/browser/*.js` run **inside the page**: plain JS, no imports, each
   file a single function expression invoked through `bridgeCall()`.
-  `recorder.js` and `freeze.js` are IIFEs.
+  `recorder.js`, `freeze.js` and `hold.js` are IIFEs.
 - `bridge/runtime/motion.js` ships **into generated sites**: keep it small and dependency-free.
 - Unit tests sit next to the code (`*.test.ts`); end-to-end tests live in `tests/e2e`.
 

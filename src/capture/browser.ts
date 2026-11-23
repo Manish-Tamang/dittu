@@ -24,6 +24,7 @@ export async function newContext(browser: Browser, viewport: Viewport, opts: { r
     ignoreHTTPSErrors: true,
     serviceWorkers: 'block',
   });
+  await context.addInitScript({ content: readBridge('browser/hold.js') });
   if (opts.record) await context.addInitScript({ content: readBridge('browser/recorder.js') });
   return context;
 }

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix: when Chromium crashed during a `--pages` crawl, every later page was skipped and the clone failed before writing anything (its asset downloads used the dead browser). dittu now relaunches the browser and retries the page once, and stops crawling after 10 pages in a row fail.
+- Fix: full-page screenshots resize the viewport, which ran the site's `ResizeObserver` callbacks even on a frozen page (canvas heroes redrew mid-screenshot). Observers are now held once the page is frozen.
 
 ## 0.3.0 (2026-10-29)
 
